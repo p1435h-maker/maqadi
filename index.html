@@ -36,6 +36,11 @@
   .add input{flex:1;min-width:0;font:inherit;font-size:18px;padding:14px 16px;border-radius:16px;
     border:1.5px solid var(--line);background:var(--card);outline:none;color:var(--ink)}
   .add input:focus{border-color:var(--green)}
+  .add input.qin{flex:none;width:92px;font-size:16px;padding:14px 10px;text-align:center}
+  .qty{display:inline-block;font-size:14px;font-weight:700;color:var(--green);background:var(--green2);border-radius:8px;padding:1px 9px;margin-inline-start:8px;vertical-align:2px}
+  .done .qty{color:var(--done);background:#efece5}
+  .fld{width:100%;font:inherit;font-size:18px;padding:13px 15px;border-radius:14px;border:1.5px solid var(--line);outline:none;margin-top:6px}
+  .fld:focus{border-color:var(--green)}
   .add button{border:0;background:var(--green);color:#fff;font:inherit;font-size:26px;line-height:1;
     width:56px;border-radius:16px;cursor:pointer}
   .add button:active{transform:scale(.96)}
@@ -115,7 +120,7 @@
   <header>
     <div class="top">
       <img class="logo" src="icon-192.png" alt="">
-      <h1>مقاضي</h1><span class="ver">الإصدار&nbsp;5</span>
+      <h1>مقاضي</h1><span class="ver">الإصدار&nbsp;6</span>
       <div class="sp"></div>
       <button class="who" id="whoBtn"><span class="dot" id="dot"></span><span id="whoName">…</span></button>
       <button class="hmore" id="menuBtn" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
@@ -125,7 +130,8 @@
       <button class="tab" data-tab="long">مقاضي طويلة <span class="cnt" id="cntLong">0</span></button>
     </div>
     <form class="add" id="addForm" autocomplete="off">
-      <input id="inp" placeholder="أضف لمقاضي اليوم…" enterkeyhint="done" autocomplete="off">
+      <input id="inp" placeholder="أضف لمقاضي اليوم…" enterkeyhint="next" autocomplete="off">
+      <input id="qin" class="qin" placeholder="الكمية" enterkeyhint="done" autocomplete="off" maxlength="20">
       <button type="submit" aria-label="إضافة">+</button>
     </form>
     <div class="sugg" id="sugg"></div>
@@ -161,7 +167,7 @@
 
 <script>
 /* ===== الإعدادات ===== */
-const VERSION = 5;
+const VERSION = 6;
 let CHANNEL = '';      // يُشتق من رمز العائلة — لا يُكتب في الملف
 let AES = null;        // مفتاح التشفير — يُشتق من رمز العائلة
 const SERVER  = 'https://ntfy.sh';
@@ -342,15 +348,20 @@ function dayKey(ts){ const d = new Date(ts); return d.getFullYear()*10000 + (d.g
 const added = it => it.c || it.t;
 const abc = (a,b) => norm(a.n).localeCompare(norm(b.n), 'ar');
 function activeByName(k){ return Object.values(S.items).find(it=>!it.d && inTab(it) && norm(it.n)===k); }
-function addItem(name){
+function addItem(name, q){
   name = name.replace(/\s+/g,' ').trim(); if(!name) return;
+  q = (q||'').replace(/\s+/g,' ').trim();
   const k = norm(name);
   const ex = activeByName(k);
-  if(ex && !ex.s){ flash(ex.id); return; }
+  if(ex && !ex.s){
+    if(q && q !== (ex.q||'')){ const it = {...ex, q, t:Date.now()}; S.items[ex.id] = it; save(); render(); sendOp(it); flash(ex.id, 'حُدّثت الكمية'); }
+    else flash(ex.id);
+    return;
+  }
   let it;
   const now = Date.now(), L = TAB === 'long' ? 1 : 0;
-  if(ex && ex.s) it = {...ex, n:name, s:0, b:'', a:S.me, L, c:now, t:now};
-  else it = {id: rid(7), n:name, s:0, d:0, a:S.me, b:'', L, c:now, t:now};
+  if(ex && ex.s) it = {...ex, n:name, q, s:0, b:'', a:S.me, L, c:now, t:now};
+  else it = {id: rid(7), n:name, q, s:0, d:0, a:S.me, b:'', L, c:now, t:now};
   bump(name);
   S.items[it.id] = it; save(); render([it.id]); sendOp(it);
 }
@@ -396,7 +407,7 @@ function row(it, isNew){
                     : (it.a ? 'أضافه ' + esc(it.a) + ' · ' : '') + ago(added(it));
   return `<div class="item ${it.s?'done':''} ${isNew?'new':''}" data-id="${it.id}">
     <div class="box">${CHECK}</div>
-    <div class="txt"><div class="name">${esc(it.n)}</div><div class="meta">${meta}</div></div>
+    <div class="txt"><div class="name">${esc(it.n)}${it.q ? `<span class="qty">${esc(it.q)}</span>` : ''}</div><div class="meta">${meta}</div></div>
     <button class="more" data-more="${it.id}" aria-label="خيارات">${DOTS}</button></div>`;
 }
 function render(newIds){
@@ -419,10 +430,10 @@ function render(newIds){
     (done.length ? `<div class="sec">المشطوبات (${done.length})<div class="sp"></div><button class="clear" id="clearBtn">مسح المشطوب</button></div>` + R(done) : '');
   suggest();
 }
-function flash(id){
+function flash(id, msg){
   const el = document.querySelector(`[data-id="${id}"]`);
   if(el){ el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); el.scrollIntoView({block:'center', behavior:'smooth'}); }
-  toast('موجود في القائمة');
+  toast(msg || 'موجود في القائمة');
 }
 document.addEventListener('click', e => {
   const d = e.target.closest('[data-more]'); if(d){ e.stopPropagation(); itemMenu(d.dataset.more); return; }
@@ -444,10 +455,12 @@ function suggest(){
 $('inp').addEventListener('input', suggest);
 $('sugg').addEventListener('click', e => {
   const c = e.target.closest('.chip'); if(!c) return;
-  addItem(c.dataset.s); $('inp').value = ''; suggest(); $('inp').focus();
+  $('inp').value = c.dataset.s; $('sugg').innerHTML = ''; $('qin').focus();
 });
 $('addForm').addEventListener('submit', e => {
-  e.preventDefault(); addItem($('inp').value); $('inp').value = ''; suggest(); $('inp').focus();
+  e.preventDefault();
+  if(!$('inp').value.trim()){ $('inp').focus(); return; }
+  addItem($('inp').value, $('qin').value); $('inp').value = ''; $('qin').value = ''; suggest(); $('inp').focus();
 });
 
 /* رسالة صغيرة مع تراجع */
@@ -517,19 +530,23 @@ function itemMenu(id){
   const it = S.items[id]; if(!it) return;
   sheet(it.n, `<div class="acts">
     <button class="act" data-a="move"><span class="ic">${it.L ? '📅' : '📋'}</span>${it.L ? 'نقل لمقاضي اليوم' : 'نقل للمقاضي الطويلة'}</button>
-    <button class="act" data-a="edit"><span class="ic">✏️</span>تعديل الاسم</button>
+    <button class="act" data-a="edit"><span class="ic">✏️</span>تعديل الاسم والكمية</button>
     <button class="act red" data-a="del"><span class="ic">🗑️</span>حذف من القائمة</button></div>`);
   $('actBody').onclick = e => {
     const a = e.target.closest('[data-a]'); if(!a) return;
     if(a.dataset.a === 'del'){ closeSheet(); del(id); }
     if(a.dataset.a === 'move'){ closeSheet(); move(id); }
     if(a.dataset.a === 'edit'){
-      $('actBody').innerHTML = `<input id="editInp" style="width:100%;font:inherit;font-size:18px;padding:13px 15px;border-radius:14px;border:1.5px solid var(--green);outline:none;margin-top:8px" maxlength="60">
+      $('actBody').innerHTML = `<label class="lbl">الاسم</label><input id="editInp" class="fld" maxlength="60">
+        <label class="lbl">الكمية (اختياري)</label><input id="editQ" class="fld" maxlength="20" placeholder="مثلاً: 2 أو 2 كيلو أو شوية">
         <button class="btn" id="editSave">حفظ</button>`;
-      $('editInp').value = it.n; $('editInp').focus(); $('editInp').select();
-      const go = () => { const v = $('editInp').value.replace(/\s+/g,' ').trim(); closeSheet(); if(v && v !== it.n) rename(id, v); };
+      $('editInp').value = it.n; $('editQ').value = it.q || ''; $('editInp').focus();
+      const go = () => {
+        const v = $('editInp').value.replace(/\s+/g,' ').trim(), q = $('editQ').value.replace(/\s+/g,' ').trim();
+        closeSheet(); if(v && (v !== it.n || q !== (it.q||''))) rename(id, v, q);
+      };
       $('editSave').onclick = go;
-      $('editInp').onkeydown = ev => { if(ev.key === 'Enter') go(); };
+      $('editInp').onkeydown = $('editQ').onkeydown = ev => { if(ev.key === 'Enter') go(); };
     }
   };
 }
@@ -540,9 +557,9 @@ function move(id){
   S.items[id] = it; save(); render(); sendOp(it);
   toast(toLong ? 'نُقل إلى المقاضي الطويلة' : 'نُقل إلى مقاضي اليوم');
 }
-function rename(id, name){
+function rename(id, name, q){
   const ex = S.items[id]; if(!ex) return;
-  const it = {...ex, n:name, t:Date.now()};
+  const it = {...ex, n:name, q, t:Date.now()};
   S.items[id] = it; save(); render(); sendOp(it);
 }
 
