@@ -58,13 +58,29 @@
   .txt{flex:1;min-width:0}
   .name{font-size:18px;font-weight:600;overflow-wrap:anywhere}
   .meta{font-size:12px;color:var(--soft);margin-top:2px}
-  .x{border:0;background:none;color:#c4bdae;font-size:22px;padding:2px 6px;cursor:pointer;line-height:1}
+  .more{border:0;background:none;color:#a9a191;padding:6px 4px;cursor:pointer;line-height:0;border-radius:10px}
+  .more:active{background:#00000008}
+  .more svg{width:22px;height:22px}
+  .hmore{border:1px solid var(--line);background:var(--card);border-radius:999px;width:36px;height:34px;display:grid;place-items:center;cursor:pointer;padding:0}
+  .hmore svg{width:20px;height:20px;color:var(--ink)}
+  .acts{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+  .act{border:0;background:none;font:inherit;font-size:17px;text-align:start;padding:14px 6px;border-radius:12px;cursor:pointer;color:var(--ink);display:flex;gap:12px;align-items:center}
+  .act:active{background:#00000008}
+  .act.red{color:var(--red)}
+  .act .ic{width:26px;text-align:center;font-size:18px}
+  .cancel{margin-top:8px;width:100%;border:0;background:#efebe2;color:var(--ink);font:inherit;font-size:16px;padding:13px;border-radius:14px;cursor:pointer}
+  .steps{margin:4px 0 0;padding-inline-start:20px;line-height:2;font-size:15px}
   .done .box{background:var(--green);border-color:var(--green)}
   .done .box svg{opacity:1}
   .done .name{color:var(--done);text-decoration:line-through;font-weight:500}
   .done{background:#faf8f3}
 
-  .sec{display:flex;align-items:center;margin-top:26px;color:var(--soft);font-size:14px;font-weight:600}
+  .tabs{display:flex;gap:6px;margin-top:12px;background:#ebe6da;padding:4px;border-radius:14px}
+  .tab{flex:1;border:0;background:none;font:inherit;font-size:16px;font-weight:700;color:var(--soft);padding:10px 6px;border-radius:11px;cursor:pointer;display:flex;gap:7px;justify-content:center;align-items:center}
+  .tab.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px #0001}
+  .cnt{font-size:12px;background:var(--green);color:#fff;border-radius:999px;padding:1px 8px;font-weight:700}
+  .tab:not(.on) .cnt{background:#cfc8b8}
+  .sec{border-top:1.5px dashed #d9d2c3;padding-top:14px;display:flex;align-items:center;margin-top:26px;color:var(--soft);font-size:14px;font-weight:600}
   .sec .sp{flex:1}
   .clear{border:0;background:none;color:var(--red);font:inherit;font-size:14px;cursor:pointer;padding:4px}
   .empty{text-align:center;color:var(--soft);margin-top:60px;font-size:16px;line-height:1.9}
@@ -84,6 +100,11 @@
   .panel input{width:100%;font:inherit;font-size:18px;padding:13px 15px;border-radius:14px;border:1.5px solid var(--line);outline:none}
   .panel input:focus{border-color:var(--green)}
   .btn{margin-top:14px;width:100%;border:0;background:var(--green);color:#fff;font:inherit;font-size:17px;font-weight:700;padding:14px;border-radius:14px;cursor:pointer}
+  .lbl{display:block;font-size:13px;color:var(--soft);margin:14px 0 6px;font-weight:600}
+  .code{direction:ltr;text-align:center;letter-spacing:2px;font-family:ui-monospace,Consolas,monospace}
+  .link{border:0;background:none;color:var(--green);font:inherit;font-size:14px;margin-top:10px;cursor:pointer;padding:4px;width:100%}
+  .btn2{margin-top:10px;width:100%;border:1.5px solid #b9d8c8;background:var(--green2);color:var(--green);font:inherit;font-size:16px;font-weight:700;padding:12px;border-radius:14px;cursor:pointer}
+  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:1em}
   .install{display:none;margin-top:12px;width:100%;border:1.5px dashed #b9d8c8;background:var(--green2);color:var(--green);
     font:inherit;font-size:15px;padding:11px;border-radius:14px;cursor:pointer}
   .hint{font-size:13px;color:var(--soft);margin-top:12px;line-height:1.7;display:none}
@@ -94,12 +115,17 @@
   <header>
     <div class="top">
       <img class="logo" src="icon-192.png" alt="">
-      <h1>مقاضي<span class="ver">إصدار 1</span></h1>
+      <h1>مقاضي<span class="ver">إصدار 4</span></h1>
       <div class="sp"></div>
       <button class="who" id="whoBtn"><span class="dot" id="dot"></span><span id="whoName">…</span></button>
+      <button class="hmore" id="menuBtn" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+    </div>
+    <div class="tabs">
+      <button class="tab on" data-tab="day">مقاضي اليوم <span class="cnt" id="cntDay">0</span></button>
+      <button class="tab" data-tab="long">مقاضي طويلة <span class="cnt" id="cntLong">0</span></button>
     </div>
     <form class="add" id="addForm" autocomplete="off">
-      <input id="inp" placeholder="أضف غرضاً…" enterkeyhint="done" autocomplete="off">
+      <input id="inp" placeholder="أضف لمقاضي اليوم…" enterkeyhint="done" autocomplete="off">
       <button type="submit" aria-label="إضافة">+</button>
     </form>
     <div class="sugg" id="sugg"></div>
@@ -115,17 +141,32 @@
 
 <div class="sheet" id="nameSheet">
   <div class="panel">
-    <h2>أهلاً بك في مقاضي</h2>
-    <p>اكتب اسمك ليعرف أهل البيت من أضاف ومن اشترى.</p>
+    <h2 id="sheetTitle">أهلاً بك في مقاضي</h2>
+    <p>قائمتكم خاصة ومشفّرة، لا يراها إلا من عنده رمز العائلة.</p>
+    <label class="lbl">اسمك (يظهر لأهل البيت)</label>
     <input id="nameInp" placeholder="مثلاً: أبو إلياس" maxlength="20">
+    <label class="lbl">رمز العائلة</label>
+    <input id="codeInp" class="code" placeholder="xxxx-xxxx-xxxx" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <button class="link" id="newCode">ليس عندي رمز؟ أنشئ قائمة جديدة للعائلة</button>
+    <div class="err" id="err"></div>
     <button class="btn" id="nameSave">ابدأ</button>
+    <button class="btn2" id="shareBtn" style="display:none">📤 أرسل الرابط لأهل البيت</button>
+  </div>
+</div>
+
+<div class="sheet" id="actSheet">
+  <div class="panel">
+    <h2 id="actTitle"></h2>
+    <div id="actBody"></div>
+    <button class="cancel" id="actCancel">إلغاء</button>
   </div>
 </div>
 
 <script>
 /* ===== الإعدادات ===== */
-const VERSION = 1;
-const CHANNEL = 'maqadi-7vekdux27zuq337amg';   // قناة العائلة الخاصة
+const VERSION = 4;
+let CHANNEL = '';      // يُشتق من رمز العائلة — لا يُكتب في الملف
+let AES = null;        // مفتاح التشفير — يُشتق من رمز العائلة
 const SERVER  = 'https://ntfy.sh';
 const KEEP_DELETED_DAYS = 10;
 const MIN_REPEAT = 2;          // لا يُقترح الغرض إلا إذا تكرر مرتين فأكثر
@@ -141,6 +182,7 @@ function load(){
   s.counts = s.counts || {};    // normName -> {n,c}
   s.dev = s.dev || rid(8);
   s.me = s.me || '';
+  s.code = s.code || '';
   s.last = s.last || 0;         // آخر وقت رسالة مستلمة (ثوانٍ)
   return s;
 }
@@ -183,19 +225,46 @@ function apply(it){
   return null;
 }
 
+/* ===== التشفير برمز العائلة ===== */
+const enc = new TextEncoder(), dec = new TextDecoder();
+function cleanCode(c){ return (c||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+function prettyCode(c){ c = cleanCode(c); return c.match(/.{1,4}/g)?.join('-') || ''; }
+function b64(u8){ let s=''; for(const x of u8) s+=String.fromCharCode(x); return btoa(s); }
+function unb64(s){ const b=atob(s); const u=new Uint8Array(b.length); for(let i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; }
+async function setupKey(code){
+  code = cleanCode(code);
+  const h = new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode('maqadi-channel:' + code)));
+  CHANNEL = 'mq' + [...h.slice(0,14)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  const base = await crypto.subtle.importKey('raw', enc.encode(code), 'PBKDF2', false, ['deriveKey']);
+  AES = await crypto.subtle.deriveKey({name:'PBKDF2', salt: enc.encode('maqadi-key-v1'), iterations: 150000, hash:'SHA-256'},
+    base, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+}
+async function seal(obj){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM', iv}, AES, enc.encode(JSON.stringify(obj))));
+  const out = new Uint8Array(12 + ct.length); out.set(iv); out.set(ct, 12);
+  return b64(out);
+}
+async function open_(txt){
+  const u = unb64(txt);
+  const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:u.slice(0,12)}, AES, u.slice(12));
+  return JSON.parse(dec.decode(pt));
+}
+
 /* ===== المزامنة عبر ntfy ===== */
 let es = null, online = false, connectAt = 0, lastSnap = 0, dirty = false;
 function connect(){
+  if(!CHANNEL || !AES) return;
   if(es){ es.close(); es = null; }
   const since = S.last ? Math.max(S.last - 5, Math.floor(Date.now()/1000) - 12*3600) : '12h';
   connectAt = Date.now()/1000;
   es = new EventSource(`${SERVER}/${CHANNEL}/sse?since=${since}`);
   es.onopen = () => { setOnline(true); sendSnapshot(); };
-  es.onmessage = e => {
+  es.onmessage = async e => {
     let m; try{ m = JSON.parse(e.data); }catch(_){ return; }
     if(m.event !== 'message') return;
     if(m.time > S.last) S.last = m.time;
-    let p; try{ p = JSON.parse(m.message); }catch(_){ save(); return; }
+    let p; try{ p = await open_(m.message); }catch(_){ save(); return; }
     if(!p || p.dev === S.dev) { save(); return; }
     const live = m.time >= connectAt - 3;
     let kinds = [];
@@ -210,7 +279,8 @@ function setOnline(v){ online = v; document.getElementById('dot').classList.togg
 
 async function publish(obj){
   try{
-    const r = await fetch(`${SERVER}/${CHANNEL}`, {method:'POST', body: JSON.stringify(obj)});
+    if(!AES) throw 0;
+    const r = await fetch(`${SERVER}/${CHANNEL}`, {method:'POST', body: await seal(obj)});
     if(!r.ok) throw 0;
   }catch(e){ dirty = true; }
 }
@@ -220,7 +290,7 @@ function sendSnapshot(force){
   lastSnap = Date.now(); dirty = false;
   let its = Object.values(S.items).sort((a,b)=> b.t - a.t);
   let body = {v:VERSION, k:'snap', dev:S.dev, its};
-  while(new Blob([JSON.stringify(body)]).size > 3800 && its.length){
+  while(new Blob([JSON.stringify(body)]).size > 2700 && its.length){
     // احذف أقدم المحذوفات أولاً ثم أقدم المشطوبات
     let i = findLastIdx(its, x=>x.d); if(i<0) i = findLastIdx(its, x=>x.s); if(i<0) i = its.length-1;
     its.splice(i,1);
@@ -268,15 +338,22 @@ async function notify(title, body){
 }
 
 /* ===== الأفعال ===== */
-function activeByName(k){ return Object.values(S.items).find(it=>!it.d && norm(it.n)===k); }
+let TAB = 'day';
+const isLong = it => !!it.L;
+const inTab = it => TAB === 'long' ? isLong(it) : !isLong(it);
+function dayKey(ts){ const d = new Date(ts); return d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate(); }
+const added = it => it.c || it.t;
+const abc = (a,b) => norm(a.n).localeCompare(norm(b.n), 'ar');
+function activeByName(k){ return Object.values(S.items).find(it=>!it.d && inTab(it) && norm(it.n)===k); }
 function addItem(name){
   name = name.replace(/\s+/g,' ').trim(); if(!name) return;
   const k = norm(name);
   const ex = activeByName(k);
   if(ex && !ex.s){ flash(ex.id); return; }
   let it;
-  if(ex && ex.s) it = {...ex, n:name, s:0, b:'', a:S.me, t:Date.now()};
-  else it = {id: rid(7), n:name, s:0, d:0, a:S.me, b:'', t:Date.now()};
+  const now = Date.now(), L = TAB === 'long' ? 1 : 0;
+  if(ex && ex.s) it = {...ex, n:name, s:0, b:'', a:S.me, L, c:now, t:now};
+  else it = {id: rid(7), n:name, s:0, d:0, a:S.me, b:'', L, c:now, t:now};
   bump(name);
   S.items[it.id] = it; save(); render([it.id]); sendOp(it);
 }
@@ -293,7 +370,7 @@ function del(id, silent){
   if(!silent) toast('حُذف «'+ex.n+'»', () => restore([ex]));
 }
 function clearDone(){
-  const done = Object.values(S.items).filter(it=>!it.d && it.s);
+  const done = Object.values(S.items).filter(it=>!it.d && it.s && inTab(it));
   if(!done.length) return;
   const now = Date.now();
   for(const ex of done) S.items[ex.id] = {...ex, d:1, t:now};
@@ -309,6 +386,7 @@ function restore(list){
 /* ===== العرض ===== */
 const $ = id => document.getElementById(id);
 const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const DOTS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg>';
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function ago(t){
   const m = Math.round((Date.now()-t)/60000);
@@ -318,21 +396,30 @@ function ago(t){
 }
 function row(it, isNew){
   const meta = it.s ? (it.b ? 'اشتراه ' + esc(it.b) : 'تم شراؤه') + ' · ' + ago(it.t)
-                    : (it.a ? 'أضافه ' + esc(it.a) + ' · ' : '') + ago(it.t);
+                    : (it.a ? 'أضافه ' + esc(it.a) + ' · ' : '') + ago(added(it));
   return `<div class="item ${it.s?'done':''} ${isNew?'new':''}" data-id="${it.id}">
     <div class="box">${CHECK}</div>
     <div class="txt"><div class="name">${esc(it.n)}</div><div class="meta">${meta}</div></div>
-    <button class="x" data-del="${it.id}" aria-label="حذف">×</button></div>`;
+    <button class="more" data-more="${it.id}" aria-label="خيارات">${DOTS}</button></div>`;
 }
 function render(newIds){
   newIds = newIds || [];
   const all = Object.values(S.items).filter(it=>!it.d);
-  const act = all.filter(it=>!it.s).sort((a,b)=>b.t-a.t);
-  const done = all.filter(it=>it.s).sort((a,b)=>b.t-a.t);
-  $('active').innerHTML = act.length ? act.map(it=>row(it, newIds.includes(it.id))).join('')
-    : `<div class="empty"><b>🛒</b>القائمة فارغة<br>اكتب ما تحتاجه فيظهر عند الجميع فوراً</div>`;
-  $('doneWrap').innerHTML = done.length ? `<div class="sec">تم شراؤه (${done.length})<div class="sp"></div><button class="clear" id="clearBtn">مسح المشطوب</button></div>`
-    + done.map(it=>row(it)).join('') : '';
+  $('cntDay').textContent = all.filter(it=>!it.s && !isLong(it)).length;
+  $('cntLong').textContent = all.filter(it=>!it.s && isLong(it)).length;
+  const mine = all.filter(inTab);
+  const act = mine.filter(it=>!it.s).sort(abc);
+  const done = mine.filter(it=>it.s).sort(abc);
+  const R = list => list.map(it=>row(it, newIds.includes(it.id))).join('');
+  let top = act, prev = [];
+  if(TAB === 'day'){ const today = dayKey(Date.now()); top = act.filter(it=>dayKey(added(it)) === today); prev = act.filter(it=>dayKey(added(it)) !== today); }
+  const emptyMsg = TAB === 'day'
+    ? (prev.length ? `<div class="empty" style="margin:26px 0 10px"><b>✨</b>لا جديد لليوم</div>` : `<div class="empty"><b>🛒</b>لا مقاضي لليوم<br>اكتب ما تحتاجه فيظهر عند الجميع فوراً</div>`)
+    : `<div class="empty"><b>📋</b>لا مقاضي طويلة<br>أضف هنا ما يُشترى لاحقاً أو على مهل</div>`;
+  $('active').innerHTML = top.length ? R(top) : emptyMsg;
+  $('doneWrap').innerHTML =
+    (prev.length ? `<div class="sec">مقاضي سابقة (${prev.length})</div>` + R(prev) : '') +
+    (done.length ? `<div class="sec">المشطوبات (${done.length})<div class="sp"></div><button class="clear" id="clearBtn">مسح المشطوب</button></div>` + R(done) : '');
   suggest();
 }
 function flash(id){
@@ -341,7 +428,7 @@ function flash(id){
   toast('موجود في القائمة');
 }
 document.addEventListener('click', e => {
-  const d = e.target.closest('[data-del]'); if(d){ e.stopPropagation(); del(d.dataset.del); return; }
+  const d = e.target.closest('[data-more]'); if(d){ e.stopPropagation(); itemMenu(d.dataset.more); return; }
   if(e.target.id === 'clearBtn'){ clearDone(); return; }
   const r = e.target.closest('.item'); if(r) toggle(r.dataset.id);
 });
@@ -351,7 +438,7 @@ function suggest(){
   const q = norm($('inp').value);
   const box = $('sugg');
   if(!q){ box.innerHTML = ''; return; }
-  const act = new Set(Object.values(S.items).filter(it=>!it.d && !it.s).map(it=>norm(it.n)));
+  const act = new Set(Object.values(S.items).filter(it=>!it.d && !it.s && inTab(it)).map(it=>norm(it.n)));
   const list = Object.entries(S.counts)
     .filter(([k,v]) => v.c >= MIN_REPEAT && k.startsWith(q) && k !== q && !act.has(k))
     .sort((a,b) => b[1].c - a[1].c).slice(0, MAX_SUGG);
@@ -378,13 +465,38 @@ $('toastBtn').onclick = () => { if(toastUndo) toastUndo(); toastUndo = null; $('
 
 /* الاسم */
 function showName(){ $('whoName').textContent = S.me || 'اسمك'; }
-function askName(){ $('nameInp').value = S.me; $('nameSheet').classList.add('show'); setTimeout(()=>$('nameInp').focus(), 100); }
+function askName(){
+  $('nameInp').value = S.me; $('codeInp').value = prettyCode(pendingCode || S.code); $('err').textContent = '';
+  const ready = !!S.code;
+  $('sheetTitle').textContent = ready ? 'الإعدادات' : 'أهلاً بك في مقاضي';
+  $('nameSave').textContent = ready ? 'حفظ' : 'ابدأ';
+  $('shareBtn').style.display = ready ? 'block' : 'none';
+  $('newCode').style.display = ready ? 'none' : 'block';
+  $('nameSheet').classList.add('show');
+  setTimeout(()=> (S.me ? $('codeInp') : $('nameInp')).focus(), 100);
+}
 $('whoBtn').onclick = askName;
-$('nameSave').onclick = () => {
+$('nameSheet').addEventListener('click', e => { if(e.target.id === 'nameSheet' && S.code && S.me) $('nameSheet').classList.remove('show'); });
+$('newCode').onclick = () => { $('codeInp').value = prettyCode(rid(12)); $('err').textContent = 'تم إنشاء رمز جديد — بعد البدء أرسل الرابط لأهل البيت.'; };
+$('nameSave').onclick = async () => {
   const v = $('nameInp').value.trim(); if(!v){ $('nameInp').focus(); return; }
-  S.me = v; save(); showName(); $('nameSheet').classList.remove('show'); audio();
+  const c = cleanCode($('codeInp').value);
+  if(c.length < 12){ $('err').textContent = 'رمز العائلة ناقص — 12 حرفاً ورقماً.'; $('codeInp').focus(); return; }
+  const changed = c !== S.code;
+  S.me = v;
+  pendingCode = '';
+  if(changed){ S.code = c; S.last = 0; S.items = {}; }
+  save(); showName(); $('nameSheet').classList.remove('show'); audio(); render();
+  if(changed){ await setupKey(S.code); connect(); }
   try{ if('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); }catch(e){}
 };
+$('shareBtn').onclick = () => shareLink();
+async function shareLink(){
+  const url = location.origin + location.pathname + '#k=' + S.code;
+  const text = 'قائمة مقاضي للبيت — افتح الرابط وثبّت التطبيق:';
+  try{ if(navigator.share){ await navigator.share({title:'مقاضي', text, url}); return; } }catch(e){ return; }
+  try{ await navigator.clipboard.writeText(text + '\n' + url); toast('نُسخ الرابط — الصقه في واتساب'); }catch(e){ prompt('انسخ الرابط:', url); }
+}
 $('nameInp').addEventListener('keydown', e => { if(e.key === 'Enter') $('nameSave').click(); });
 
 /* التثبيت */
@@ -395,9 +507,95 @@ const standalone = matchMedia('(display-mode: standalone)').matches || navigator
 if(/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone) $('iosHint').style.display = 'block';
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 
+/* ===== اللسانان ===== */
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
+  TAB = b.dataset.tab;
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === b));
+  $('inp').placeholder = TAB === 'long' ? 'أضف للمقاضي الطويلة…' : 'أضف لمقاضي اليوم…';
+  render(); window.scrollTo({top:0});
+});
+
+/* ===== قوائم الثلاث نقاط ===== */
+function sheet(title, html){
+  $('actTitle').textContent = title; $('actBody').innerHTML = html; $('actSheet').classList.add('show');
+}
+function closeSheet(){ $('actSheet').classList.remove('show'); }
+$('actCancel').onclick = closeSheet;
+$('actSheet').addEventListener('click', e => { if(e.target.id === 'actSheet') closeSheet(); });
+
+function itemMenu(id){
+  const it = S.items[id]; if(!it) return;
+  sheet(it.n, `<div class="acts">
+    <button class="act" data-a="move"><span class="ic">${it.L ? '📅' : '📋'}</span>${it.L ? 'نقل لمقاضي اليوم' : 'نقل للمقاضي الطويلة'}</button>
+    <button class="act" data-a="edit"><span class="ic">✏️</span>تعديل الاسم</button>
+    <button class="act red" data-a="del"><span class="ic">🗑️</span>حذف من القائمة</button></div>`);
+  $('actBody').onclick = e => {
+    const a = e.target.closest('[data-a]'); if(!a) return;
+    if(a.dataset.a === 'del'){ closeSheet(); del(id); }
+    if(a.dataset.a === 'move'){ closeSheet(); move(id); }
+    if(a.dataset.a === 'edit'){
+      $('actBody').innerHTML = `<input id="editInp" style="width:100%;font:inherit;font-size:18px;padding:13px 15px;border-radius:14px;border:1.5px solid var(--green);outline:none;margin-top:8px" maxlength="60">
+        <button class="btn" id="editSave">حفظ</button>`;
+      $('editInp').value = it.n; $('editInp').focus(); $('editInp').select();
+      const go = () => { const v = $('editInp').value.replace(/\s+/g,' ').trim(); closeSheet(); if(v && v !== it.n) rename(id, v); };
+      $('editSave').onclick = go;
+      $('editInp').onkeydown = ev => { if(ev.key === 'Enter') go(); };
+    }
+  };
+}
+function move(id){
+  const ex = S.items[id]; if(!ex) return;
+  const now = Date.now(), toLong = !ex.L;
+  const it = {...ex, L: toLong ? 1 : 0, c: toLong ? added(ex) : now, t: now};
+  S.items[id] = it; save(); render(); sendOp(it);
+  toast(toLong ? 'نُقل إلى المقاضي الطويلة' : 'نُقل إلى مقاضي اليوم');
+}
+function rename(id, name){
+  const ex = S.items[id]; if(!ex) return;
+  const it = {...ex, n:name, t:Date.now()};
+  S.items[id] = it; save(); render(); sendOp(it);
+}
+
+function mainMenu(){
+  const inst = standalone ? '' : `<button class="act" data-a="install"><span class="ic">📲</span>ثبّت التطبيق على الجوال</button>`;
+  sheet('مقاضي', `<div class="acts">
+    ${inst}
+    <button class="act" data-a="share"><span class="ic">📤</span>أرسل الرابط لأهل البيت</button>
+    <button class="act" data-a="settings"><span class="ic">⚙️</span>الاسم ورمز العائلة</button></div>
+    <p style="margin:10px 6px 0;font-size:12px">إصدار ${VERSION}</p>`);
+  $('actBody').onclick = e => {
+    const a = e.target.closest('[data-a]'); if(!a) return;
+    if(a.dataset.a === 'install') install();
+    if(a.dataset.a === 'share'){ closeSheet(); shareLink(); }
+    if(a.dataset.a === 'settings'){ closeSheet(); askName(); }
+  };
+}
+$('menuBtn').onclick = mainMenu;
+
+async function install(){
+  if(deferred){
+    closeSheet(); deferred.prompt(); await deferred.userChoice; deferred = null; $('installBtn').style.display = 'none'; return;
+  }
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  sheet('تثبيت مقاضي', ios
+    ? `<ol class="steps"><li>افتح الرابط في <b>سفاري</b>.</li><li>اضغط زر المشاركة <b>⬆︎</b> أسفل الشاشة.</li><li>اختر <b>إضافة إلى الشاشة الرئيسية</b> ثم <b>إضافة</b>.</li></ol>`
+    : `<ol class="steps"><li>افتح الرابط في متصفح <b>كروم</b>.</li><li>اضغط النقاط الثلاث <b>⋮</b> أعلى يمين كروم.</li><li>اختر <b>تثبيت التطبيق</b> أو <b>إضافة إلى الشاشة الرئيسية</b> ثم <b>تثبيت</b>.</li></ol>
+       <p style="margin:8px 0 0;font-size:13px">ستجد أيقونة «مقاضي» بين تطبيقاتك وتفتح بلا شريط المتصفح.</p>`);
+}
+
 /* البدء */
-showName(); render(); connect();
-if(!S.me) askName();
+let pendingCode = '';
+(async () => {
+  const m = location.hash.match(/k=([a-z0-9-]+)/i);
+  if(m){
+    const c = cleanCode(m[1]);
+    history.replaceState(null, '', location.pathname);   // لا يبقى الرمز ظاهراً في الرابط
+    if(c.length >= 12){ if(!S.code){ S.code = c; save(); } else if(c !== S.code) pendingCode = c; }
+  }
+  showName(); render();
+  if(S.code){ await setupKey(S.code); connect(); }
+  if(!S.me || !S.code || pendingCode) askName();
+})();
 setInterval(() => render(), 60000);   // تحديث «قبل كم دقيقة»
 </script>
 </body>
