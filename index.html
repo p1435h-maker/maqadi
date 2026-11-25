@@ -25,7 +25,7 @@
   .top{display:flex;align-items:center;gap:10px}
   .logo{width:38px;height:38px;border-radius:11px}
   h1{margin:0;font-size:24px;font-weight:800;letter-spacing:0}
-  .ver{font-size:12px;color:var(--soft);font-weight:600;margin-inline-start:8px}
+  .ver{font-size:12px;color:var(--soft);font-weight:600;align-self:flex-end;margin-bottom:5px;white-space:nowrap}
   .sp{flex:1}
   .who{border:0;background:var(--card);border:1px solid var(--line);border-radius:999px;
     padding:6px 12px;font:inherit;font-size:13px;color:var(--ink);display:flex;align-items:center;gap:7px}
@@ -115,7 +115,7 @@
   <header>
     <div class="top">
       <img class="logo" src="icon-192.png" alt="">
-      <h1>مقاضي<span class="ver">إصدار 4</span></h1>
+      <h1>مقاضي</h1><span class="ver">الإصدار&nbsp;5</span>
       <div class="sp"></div>
       <button class="who" id="whoBtn"><span class="dot" id="dot"></span><span id="whoName">…</span></button>
       <button class="hmore" id="menuBtn" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
@@ -142,12 +142,9 @@
 <div class="sheet" id="nameSheet">
   <div class="panel">
     <h2 id="sheetTitle">أهلاً بك في مقاضي</h2>
-    <p>قائمتكم خاصة ومشفّرة، لا يراها إلا من عنده رمز العائلة.</p>
+    <p id="sheetNote">قائمتكم خاصة ومشفّرة، لا يراها إلا أهل البيت.</p>
     <label class="lbl">اسمك (يظهر لأهل البيت)</label>
     <input id="nameInp" placeholder="مثلاً: أبو إلياس" maxlength="20">
-    <label class="lbl">رمز العائلة</label>
-    <input id="codeInp" class="code" placeholder="xxxx-xxxx-xxxx" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <button class="link" id="newCode">ليس عندي رمز؟ أنشئ قائمة جديدة للعائلة</button>
     <div class="err" id="err"></div>
     <button class="btn" id="nameSave">ابدأ</button>
     <button class="btn2" id="shareBtn" style="display:none">📤 أرسل الرابط لأهل البيت</button>
@@ -164,7 +161,7 @@
 
 <script>
 /* ===== الإعدادات ===== */
-const VERSION = 4;
+const VERSION = 5;
 let CHANNEL = '';      // يُشتق من رمز العائلة — لا يُكتب في الملف
 let AES = null;        // مفتاح التشفير — يُشتق من رمز العائلة
 const SERVER  = 'https://ntfy.sh';
@@ -466,28 +463,21 @@ $('toastBtn').onclick = () => { if(toastUndo) toastUndo(); toastUndo = null; $('
 /* الاسم */
 function showName(){ $('whoName').textContent = S.me || 'اسمك'; }
 function askName(){
-  $('nameInp').value = S.me; $('codeInp').value = prettyCode(pendingCode || S.code); $('err').textContent = '';
-  const ready = !!S.code;
-  $('sheetTitle').textContent = ready ? 'الإعدادات' : 'أهلاً بك في مقاضي';
+  $('nameInp').value = S.me; $('err').textContent = '';
+  const ready = !!S.me;
+  $('sheetTitle').textContent = ready ? 'تغيير الاسم' : 'أهلاً بك في مقاضي';
+  $('sheetNote').textContent = ready ? 'اسمك يظهر لأهل البيت بجانب ما تضيفه وتشتريه.'
+    : 'اكتب اسمك وابدأ. ولإدخال أهل البيت: من ⋮ اختر «أرسل الرابط لأهل البيت».';
   $('nameSave').textContent = ready ? 'حفظ' : 'ابدأ';
-  $('shareBtn').style.display = ready ? 'block' : 'none';
-  $('newCode').style.display = ready ? 'none' : 'block';
+  $('shareBtn').style.display = 'none';
   $('nameSheet').classList.add('show');
-  setTimeout(()=> (S.me ? $('codeInp') : $('nameInp')).focus(), 100);
+  setTimeout(()=> $('nameInp').focus(), 100);
 }
 $('whoBtn').onclick = askName;
-$('nameSheet').addEventListener('click', e => { if(e.target.id === 'nameSheet' && S.code && S.me) $('nameSheet').classList.remove('show'); });
-$('newCode').onclick = () => { $('codeInp').value = prettyCode(rid(12)); $('err').textContent = 'تم إنشاء رمز جديد — بعد البدء أرسل الرابط لأهل البيت.'; };
-$('nameSave').onclick = async () => {
+$('nameSheet').addEventListener('click', e => { if(e.target.id === 'nameSheet' && S.me) $('nameSheet').classList.remove('show'); });
+$('nameSave').onclick = () => {
   const v = $('nameInp').value.trim(); if(!v){ $('nameInp').focus(); return; }
-  const c = cleanCode($('codeInp').value);
-  if(c.length < 12){ $('err').textContent = 'رمز العائلة ناقص — 12 حرفاً ورقماً.'; $('codeInp').focus(); return; }
-  const changed = c !== S.code;
-  S.me = v;
-  pendingCode = '';
-  if(changed){ S.code = c; S.last = 0; S.items = {}; }
-  save(); showName(); $('nameSheet').classList.remove('show'); audio(); render();
-  if(changed){ await setupKey(S.code); connect(); }
+  S.me = v; save(); showName(); $('nameSheet').classList.remove('show'); audio(); render();
   try{ if('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); }catch(e){}
 };
 $('shareBtn').onclick = () => shareLink();
@@ -561,7 +551,7 @@ function mainMenu(){
   sheet('مقاضي', `<div class="acts">
     ${inst}
     <button class="act" data-a="share"><span class="ic">📤</span>أرسل الرابط لأهل البيت</button>
-    <button class="act" data-a="settings"><span class="ic">⚙️</span>الاسم ورمز العائلة</button></div>
+    <button class="act" data-a="settings"><span class="ic">✏️</span>تغيير اسمي</button></div>
     <p style="margin:10px 6px 0;font-size:12px">إصدار ${VERSION}</p>`);
   $('actBody').onclick = e => {
     const a = e.target.closest('[data-a]'); if(!a) return;
@@ -584,17 +574,16 @@ async function install(){
 }
 
 /* البدء */
-let pendingCode = '';
 (async () => {
   const m = location.hash.match(/k=([a-z0-9-]+)/i);
-  if(m){
-    const c = cleanCode(m[1]);
-    history.replaceState(null, '', location.pathname);   // لا يبقى الرمز ظاهراً في الرابط
-    if(c.length >= 12){ if(!S.code){ S.code = c; save(); } else if(c !== S.code) pendingCode = c; }
-  }
+  const c = m ? cleanCode(m[1]) : '';
+  if(c.length >= 12 && c !== S.code){ S.code = c; S.last = 0; S.items = {}; save(); }   // دخول بالرابط العائلي
+  if(!S.code){ S.code = rid(12); save(); }                                               // أول جهاز: رمز تلقائي خفي
+  // يبقى الرمز في الرابط ليحتفظ به الآيفون عند الإضافة للشاشة الرئيسية
+  if(!m || c !== S.code) history.replaceState(null, '', location.pathname + '#k=' + S.code);
   showName(); render();
-  if(S.code){ await setupKey(S.code); connect(); }
-  if(!S.me || !S.code || pendingCode) askName();
+  await setupKey(S.code); connect();
+  if(!S.me) askName();
 })();
 setInterval(() => render(), 60000);   // تحديث «قبل كم دقيقة»
 </script>
