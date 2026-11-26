@@ -32,11 +32,19 @@
   .dot{width:8px;height:8px;border-radius:50%;background:#bbb;transition:.3s}
   .dot.on{background:#2fb37a;box-shadow:0 0 0 3px #2fb37a22}
 
-  .add{margin-top:12px;display:flex;gap:8px}
+  .add{margin-top:12px;display:grid;grid-template-columns:1fr 56px;gap:8px}
+  .add #inp{grid-column:1;grid-row:1}
+  .add #qin{grid-column:1;grid-row:2}
+  .add #addBtn{grid-column:2;grid-row:1 / span 2}
+  .find{margin-top:12px;display:none}
+  .find input{width:100%;font:inherit;font-size:18px;padding:14px 16px;border-radius:16px;border:1.5px solid var(--line);background:var(--card);outline:none;color:var(--ink)}
+  .find input:focus{border-color:var(--green)}
+  .tg2{font-size:11px;border-radius:6px;padding:1px 7px;margin-inline-start:6px;vertical-align:2px;background:var(--green2);color:var(--green);font-weight:700}
+  .tg2.l{background:#e9e3f5;color:#5d4a8c}
   .add input{flex:1;min-width:0;font:inherit;font-size:18px;padding:14px 16px;border-radius:16px;
     border:1.5px solid var(--line);background:var(--card);outline:none;color:var(--ink)}
   .add input:focus{border-color:var(--green)}
-  .add input.qin{flex:none;width:92px;font-size:16px;padding:14px 10px;text-align:center}
+  .add input.qin{font-size:16px;padding:11px 16px}
   .qty{display:inline-block;font-size:14px;font-weight:700;color:var(--green);background:var(--green2);border-radius:8px;padding:1px 9px;margin-inline-start:8px;vertical-align:2px}
   .done .qty{color:var(--done);background:#efece5}
   .fld{width:100%;font:inherit;font-size:18px;padding:13px 15px;border-radius:14px;border:1.5px solid var(--line);outline:none;margin-top:6px}
@@ -45,12 +53,18 @@
     width:56px;border-radius:16px;cursor:pointer}
   .add button:active{transform:scale(.96)}
   .sugg{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;min-height:0}
+  .chip.ex{background:var(--card);border-color:var(--line);color:var(--ink);display:flex;align-items:center;gap:6px}
+  .chip .tg{font-size:11px;color:var(--soft);background:#efebe2;border-radius:6px;padding:1px 6px}
+  .chip .tg.l{background:#e9e3f5;color:#5d4a8c}
+  .chip .cq{font-size:12px;font-weight:700;color:var(--green)}
+  .selhint{display:none;margin-top:8px;font-size:13px;color:var(--green);background:var(--green2);border-radius:10px;padding:7px 12px}
+  .selhint button{border:0;background:none;color:var(--soft);font:inherit;font-size:13px;cursor:pointer;float:left}
   .chip{border:1px solid #cfe5d9;background:var(--green2);color:var(--green);font:inherit;font-size:15px;
     padding:7px 14px;border-radius:999px;cursor:pointer;animation:pop .18s ease}
   @keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
   .list{margin-top:8px}
-  .item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+  .item{touch-action:manipulation;display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
     border-radius:16px;padding:13px 14px;margin-top:8px;cursor:pointer;user-select:none;
     transition:background .2s, transform .1s}
   .item:active{transform:scale(.99)}
@@ -80,10 +94,10 @@
   .done .name{color:var(--done);text-decoration:line-through;font-weight:500}
   .done{background:#faf8f3}
 
-  .tabs{display:flex;gap:6px;margin-top:12px;background:#ebe6da;padding:4px;border-radius:14px}
-  .tab{flex:1;border:0;background:none;font:inherit;font-size:16px;font-weight:700;color:var(--soft);padding:10px 6px;border-radius:11px;cursor:pointer;display:flex;gap:7px;justify-content:center;align-items:center}
+  .tabs{display:flex;gap:3px;margin-top:12px;background:#ebe6da;padding:4px;border-radius:14px}
+  .tab{flex:1 1 0;min-width:0;border:0;background:none;font:inherit;font-size:clamp(12.5px,3.6vw,15px);white-space:nowrap;letter-spacing:-.2px;font-weight:700;color:var(--soft);padding:10px 3px;border-radius:11px;cursor:pointer;display:flex;gap:4px;justify-content:center;align-items:center}
   .tab.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px #0001}
-  .cnt{font-size:12px;background:var(--green);color:#fff;border-radius:999px;padding:1px 8px;font-weight:700}
+  .cnt{font-size:11px;background:var(--green);color:#fff;border-radius:999px;padding:0 6px;font-weight:700}
   .tab:not(.on) .cnt{background:#cfc8b8}
   .sec{border-top:1.5px dashed #d9d2c3;padding-top:14px;display:flex;align-items:center;margin-top:26px;color:var(--soft);font-size:14px;font-weight:600}
   .sec .sp{flex:1}
@@ -120,7 +134,7 @@
   <header>
     <div class="top">
       <img class="logo" src="icon-192.png" alt="">
-      <h1>مقاضي</h1><span class="ver">الإصدار&nbsp;6</span>
+      <h1>مقاضي</h1><span class="ver">الإصدار&nbsp;8</span>
       <div class="sp"></div>
       <button class="who" id="whoBtn"><span class="dot" id="dot"></span><span id="whoName">…</span></button>
       <button class="hmore" id="menuBtn" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
@@ -128,12 +142,15 @@
     <div class="tabs">
       <button class="tab on" data-tab="day">مقاضي اليوم <span class="cnt" id="cntDay">0</span></button>
       <button class="tab" data-tab="long">مقاضي طويلة <span class="cnt" id="cntLong">0</span></button>
+      <button class="tab" data-tab="saved">المحفوظات <span class="cnt" id="cntSaved">0</span></button>
     </div>
     <form class="add" id="addForm" autocomplete="off">
       <input id="inp" placeholder="أضف لمقاضي اليوم…" enterkeyhint="next" autocomplete="off">
-      <input id="qin" class="qin" placeholder="الكمية" enterkeyhint="done" autocomplete="off" maxlength="20">
-      <button type="submit" aria-label="إضافة">+</button>
+      <input id="qin" class="qin" placeholder="الكمية والملاحظة (اختياري)" enterkeyhint="done" autocomplete="off" maxlength="60">
+      <button type="submit" aria-label="إضافة" id="addBtn">+</button>
     </form>
+    <div class="find" id="findBox"><input id="findInp" placeholder="ابحث في المحفوظات…" autocomplete="off"></div>
+    <div class="selhint" id="selHint"></div>
     <div class="sugg" id="sugg"></div>
     <button class="install" id="installBtn">⬇︎ ثبّت «مقاضي» على الجوال</button>
     <div class="hint" id="iosHint">للتثبيت على آيفون: اضغط زر المشاركة في سفاري ثم «إضافة إلى الشاشة الرئيسية».</div>
@@ -167,7 +184,7 @@
 
 <script>
 /* ===== الإعدادات ===== */
-const VERSION = 6;
+const VERSION = 8;
 let CHANNEL = '';      // يُشتق من رمز العائلة — لا يُكتب في الملف
 let AES = null;        // مفتاح التشفير — يُشتق من رمز العائلة
 const SERVER  = 'https://ntfy.sh';
@@ -271,6 +288,7 @@ function connect(){
     if(!p || p.dev === S.dev) { save(); return; }
     const live = m.time >= connectAt - 3;
     let kinds = [];
+    if(p.k === 'hdel' && p.key){ if(S.counts[p.key]){ delete S.counts[p.key]; save(); render(); } return; }
     if(p.k === 'op' && p.it) { const r = apply(p.it); if(r) kinds.push({r, it:p.it}); }
     if(p.k === 'snap' && Array.isArray(p.its)) for(const it of p.its){ const r = apply(it); if(r) kinds.push({r,it}); }
     if(kinds.length){ save(); render(kinds.filter(k=>k.r==='add').map(k=>k.it.id)); if(live) alertFor(kinds); }
@@ -348,20 +366,25 @@ function dayKey(ts){ const d = new Date(ts); return d.getFullYear()*10000 + (d.g
 const added = it => it.c || it.t;
 const abc = (a,b) => norm(a.n).localeCompare(norm(b.n), 'ar');
 function activeByName(k){ return Object.values(S.items).find(it=>!it.d && inTab(it) && norm(it.n)===k); }
-function addItem(name, q){
+const tabName = it => it.L ? 'المقاضي الطويلة' : 'مقاضي اليوم';
+function addItem(name, q, forceL){
   name = name.replace(/\s+/g,' ').trim(); if(!name) return;
   q = (q||'').replace(/\s+/g,' ').trim();
-  const k = norm(name);
-  const ex = activeByName(k);
-  if(ex && !ex.s){
-    if(q && q !== (ex.q||'')){ const it = {...ex, q, t:Date.now()}; S.items[ex.id] = it; save(); render(); sendOp(it); flash(ex.id, 'حُدّثت الكمية'); }
-    else flash(ex.id);
+  const k = norm(name), now = Date.now();
+  const same = Object.values(S.items).filter(it => !it.d && norm(it.n) === k);
+  const open = same.find(it => !it.s);
+  if(open){                                   // موجود ولم يُشترَ: لا تكرار — تُحدّث الكمية فقط
+    const changed = q && q !== (open.q||'');
+    if(changed){ const it = {...open, q, t:now}; S.items[open.id] = it; save(); render(); sendOp(it); }
+    const where = inTab(open) ? '' : ' في ' + tabName(open);
+    if(inTab(open)) flash(open.id, changed ? 'حُدّثت الكمية' : 'موجود في القائمة');
+    else toast((changed ? 'حُدّثت الكمية — ' : '') + 'موجود' + where);
     return;
   }
-  let it;
-  const now = Date.now(), L = TAB === 'long' ? 1 : 0;
-  if(ex && ex.s) it = {...ex, n:name, q, s:0, b:'', a:S.me, L, c:now, t:now};
-  else it = {id: rid(7), n:name, q, s:0, d:0, a:S.me, b:'', L, c:now, t:now};
+  const L = forceL !== undefined ? forceL : (TAB === 'long' ? 1 : 0);
+  const old = same[0];                         // مشطوب سابقاً: يعود بدل التكرار
+  const it = old ? {...old, n:name, q, s:0, b:'', a:S.me, L, c:now, t:now}
+                 : {id: rid(7), n:name, q, s:0, d:0, a:S.me, b:'', L, c:now, t:now};
   bump(name);
   S.items[it.id] = it; save(); render([it.id]); sendOp(it);
 }
@@ -415,6 +438,8 @@ function render(newIds){
   const all = Object.values(S.items).filter(it=>!it.d);
   $('cntDay').textContent = all.filter(it=>!it.s && !isLong(it)).length;
   $('cntLong').textContent = all.filter(it=>!it.s && isLong(it)).length;
+  $('cntSaved').textContent = Object.keys(S.counts).length;
+  if(TAB === 'saved'){ renderSaved(all); return; }
   const mine = all.filter(inTab);
   const act = mine.filter(it=>!it.s).sort(abc);
   const done = mine.filter(it=>it.s).sort(abc);
@@ -430,37 +455,118 @@ function render(newIds){
     (done.length ? `<div class="sec">المشطوبات (${done.length})<div class="sp"></div><button class="clear" id="clearBtn">مسح المشطوب</button></div>` + R(done) : '');
   suggest();
 }
+/* الشطب والإعادة بضغطتين */
+let lastTap = {id:null, t:0}, tapTimer = null;
+function tapItem(id){
+  const now = Date.now();
+  if(lastTap.id === id && now - lastTap.t < 450){ clearTimeout(tapTimer); lastTap = {id:null, t:0}; toggle(id); return; }
+  lastTap = {id, t:now}; clearTimeout(tapTimer);
+  tapTimer = setTimeout(() => { if(lastTap.id === id){ lastTap = {id:null,t:0}; if((S.hint||0) < 3){ S.hint = (S.hint||0) + 1; save(); toast('اضغط مرتين للشطب أو الإعادة'); } } }, 480);
+}
+function renderSaved(all){
+  const q = norm($('findInp').value);
+  const open = {}; for(const it of all) if(!it.s) open[norm(it.n)] = it;
+  const list = Object.entries(S.counts).filter(([k]) => !q || k.includes(q))
+    .sort((a,b) => a[0].localeCompare(b[0], 'ar'));
+  $('active').innerHTML = list.length ? list.map(([k,v]) => {
+    const o = open[k];
+    const tag = o ? `<span class="tg2 ${o.L?'l':''}">${o.L ? 'في الطويلة' : 'في اليوم'}</span>` : '';
+    return `<div class="item" data-saved="${esc(k)}"><div class="txt"><div class="name">${esc(v.n)}${tag}</div>
+      <div class="meta">سُجّل ${v.c} ${v.c === 1 ? 'مرة' : (v.c === 2 ? 'مرتين' : (v.c <= 10 ? 'مرات' : 'مرة'))}</div></div>
+      <span class="more" style="line-height:1;font-size:22px;color:var(--green)">＋</span></div>`;
+  }).join('') : `<div class="empty"><b>🗂️</b>${q ? 'لا نتائج' : 'المحفوظات فارغة<br>كل غرض تسجّله يُحفظ هنا تلقائياً'}</div>`;
+  $('doneWrap').innerHTML = '';
+}
+function savedMenu(k){
+  const v = S.counts[k]; if(!v) return;
+  const o = Object.values(S.items).find(it => !it.d && !it.s && norm(it.n) === k);
+  sheet(v.n, `${o ? `<p style="margin:0 0 4px">موجود الآن في ${tabName(o)}${o.q ? ' — ' + esc(o.q) : ''}</p>` : ''}
+    <label class="lbl">الكمية والملاحظة (اختياري)</label><input id="savQ" class="fld" maxlength="60" value="${o ? esc(o.q||'') : ''}">
+    <div class="acts">
+      <button class="act" data-a="day"><span class="ic">📅</span>${o && !o.L ? 'حفظ الكمية' : 'أضف لمقاضي اليوم'}</button>
+      <button class="act" data-a="long"><span class="ic">📋</span>${o && o.L ? 'حفظ الكمية' : 'أضف للمقاضي الطويلة'}</button>
+      <button class="act red" data-a="forget"><span class="ic">🗑️</span>حذف من المحفوظات</button></div>`);
+  $('actBody').onclick = e => {
+    const a = e.target.closest('[data-a]'); if(!a) return;
+    const q = $('savQ').value;
+    if(a.dataset.a === 'forget'){ closeSheet(); delete S.counts[k]; save(); render(); publish({v:VERSION, k:'hdel', dev:S.dev, key:k}); toast('حُذف من المحفوظات'); return; }
+    const L = a.dataset.a === 'long' ? 1 : 0;
+    closeSheet();
+    if(o && o.L !== L && !!o.L !== !!L){ const it = {...o, L, q: q.trim(), c: L ? added(o) : Date.now(), t: Date.now()}; S.items[o.id] = it; save(); render(); sendOp(it); toast('نُقل إلى ' + tabName(it)); return; }
+    addItem(v.n, q, L); if(!o) toast('أُضيف إلى ' + (L ? 'المقاضي الطويلة' : 'مقاضي اليوم'));
+  };
+}
+$('findInp').addEventListener('input', () => render());
 function flash(id, msg){
-  const el = document.querySelector(`[data-id="${id}"]`);
+  const el = document.querySelector(`.item[data-id="${id}"]`);
   if(el){ el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); el.scrollIntoView({block:'center', behavior:'smooth'}); }
   toast(msg || 'موجود في القائمة');
 }
 document.addEventListener('click', e => {
   const d = e.target.closest('[data-more]'); if(d){ e.stopPropagation(); itemMenu(d.dataset.more); return; }
   if(e.target.id === 'clearBtn'){ clearDone(); return; }
-  const r = e.target.closest('.item'); if(r) toggle(r.dataset.id);
+  const sv = e.target.closest('.item[data-saved]'); if(sv){ savedMenu(sv.dataset.saved); return; }
+  const r = e.target.closest('.item[data-id]'); if(r) tapItem(r.dataset.id);
 });
 
 /* الاقتراحات: من أول حرف، الأكثر تكراراً فقط */
+/* البحث في القوائم + الاقتراحات الأكثر تكراراً */
+let SEL = null;     // غرض موجود اختير من البحث لتعديل كميته
+function setSel(id){
+  SEL = id || null;
+  const it = SEL && S.items[SEL];
+  $('addBtn').textContent = it ? '✓' : '+';
+  const h = $('selHint');
+  if(it){
+    h.innerHTML = `<button type="button" id="selX">إلغاء</button>${it.s ? 'مشطوب — اضغط ✓ لإرجاعه للقائمة' : 'موجود في ' + tabName(it) + ' — عدّل الكمية واضغط ✓'}`;
+    h.style.display = 'block';
+    $('selX').onclick = () => { setSel(null); $('inp').value = ''; $('qin').value = ''; suggest(); $('inp').focus(); };
+  } else h.style.display = 'none';
+}
 function suggest(){
   const q = norm($('inp').value);
   const box = $('sugg');
-  if(!q){ box.innerHTML = ''; return; }
-  const act = new Set(Object.values(S.items).filter(it=>!it.d && !it.s && inTab(it)).map(it=>norm(it.n)));
-  const list = Object.entries(S.counts)
-    .filter(([k,v]) => v.c >= MIN_REPEAT && k.startsWith(q) && k !== q && !act.has(k))
+  if(SEL && (!S.items[SEL] || S.items[SEL].d || norm(S.items[SEL].n) !== q)) setSel(null);
+  if(!q || SEL){ box.innerHTML = ''; return; }
+  const live = Object.values(S.items).filter(it => !it.d);
+  const starts = it => norm(it.n).startsWith(q) || norm(it.n).includes(' ' + q);
+  const found = live.filter(it => norm(it.n).includes(q))
+    .sort((a,b) => (a.s - b.s) || (starts(b) - starts(a)) || abc(a,b)).slice(0, 6);
+  const have = new Set(live.map(it => norm(it.n)));
+  const hist = Object.entries(S.counts)
+    .filter(([k,v]) => v.c >= MIN_REPEAT && k.startsWith(q) && !have.has(k))
     .sort((a,b) => b[1].c - a[1].c).slice(0, MAX_SUGG);
-  box.innerHTML = list.map(([k,v]) => `<button type="button" class="chip" data-s="${esc(v.n)}">${esc(v.n)}</button>`).join('');
+  box.innerHTML =
+    found.map(it => `<button type="button" class="chip ex" data-id="${it.id}">${esc(it.n)}${it.q ? `<span class="cq">${esc(it.q)}</span>` : ''}<span class="tg ${it.L?'l':''}">${it.s ? '✓ مشطوب' : (it.L ? 'طويلة' : 'اليوم')}</span></button>`).join('') +
+    hist.map(([k,v]) => `<button type="button" class="chip" data-s="${esc(v.n)}">${esc(v.n)}</button>`).join('');
 }
 $('inp').addEventListener('input', suggest);
 $('sugg').addEventListener('click', e => {
   const c = e.target.closest('.chip'); if(!c) return;
+  e.stopPropagation();
+  if(c.dataset.id){
+    const it = S.items[c.dataset.id]; if(!it) return;
+    $('inp').value = it.n; $('qin').value = it.q || ''; setSel(it.id); $('sugg').innerHTML = '';
+    $('qin').focus(); $('qin').select(); return;
+  }
   $('inp').value = c.dataset.s; $('sugg').innerHTML = ''; $('qin').focus();
 });
+function updateSel(){
+  const ex = S.items[SEL]; setSel(null); if(!ex) return;
+  const q = $('qin').value.replace(/\s+/g,' ').trim(), now = Date.now();
+  if(ex.s){
+    const it = {...ex, q, s:0, b:'', a:S.me, L: TAB === 'long' ? 1 : 0, c:now, t:now};
+    bump(it.n); S.items[ex.id] = it; save(); render([it.id]); sendOp(it); toast('أُعيد إلى ' + tabName(it));
+  } else if(q !== (ex.q||'')){
+    const it = {...ex, q, t:now}; S.items[ex.id] = it; save(); render(); sendOp(it);
+    if(inTab(it)) flash(it.id, 'حُدّثت الكمية'); else toast('حُدّثت الكمية في ' + tabName(it));
+  }
+}
 $('addForm').addEventListener('submit', e => {
   e.preventDefault();
   if(!$('inp').value.trim()){ $('inp').focus(); return; }
-  addItem($('inp').value, $('qin').value); $('inp').value = ''; $('qin').value = ''; suggest(); $('inp').focus();
+  if(SEL) updateSel(); else addItem($('inp').value, $('qin').value);
+  $('inp').value = ''; $('qin').value = ''; suggest(); $('inp').focus();
 });
 
 /* رسالة صغيرة مع تراجع */
@@ -515,7 +621,10 @@ document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
   TAB = b.dataset.tab;
   document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === b));
   $('inp').placeholder = TAB === 'long' ? 'أضف للمقاضي الطويلة…' : 'أضف لمقاضي اليوم…';
-  render(); window.scrollTo({top:0});
+  const sv = TAB === 'saved';
+  $('addForm').style.display = sv ? 'none' : ''; $('findBox').style.display = sv ? 'block' : 'none';
+  $('sugg').innerHTML = ''; if(!sv) $('findInp').value = '';
+  setSel(null); render(); window.scrollTo({top:0});
 });
 
 /* ===== قوائم الثلاث نقاط ===== */
@@ -530,7 +639,7 @@ function itemMenu(id){
   const it = S.items[id]; if(!it) return;
   sheet(it.n, `<div class="acts">
     <button class="act" data-a="move"><span class="ic">${it.L ? '📅' : '📋'}</span>${it.L ? 'نقل لمقاضي اليوم' : 'نقل للمقاضي الطويلة'}</button>
-    <button class="act" data-a="edit"><span class="ic">✏️</span>تعديل الاسم والكمية</button>
+    <button class="act" data-a="edit"><span class="ic">✏️</span>تعديل الاسم والملاحظة</button>
     <button class="act red" data-a="del"><span class="ic">🗑️</span>حذف من القائمة</button></div>`);
   $('actBody').onclick = e => {
     const a = e.target.closest('[data-a]'); if(!a) return;
@@ -538,7 +647,7 @@ function itemMenu(id){
     if(a.dataset.a === 'move'){ closeSheet(); move(id); }
     if(a.dataset.a === 'edit'){
       $('actBody').innerHTML = `<label class="lbl">الاسم</label><input id="editInp" class="fld" maxlength="60">
-        <label class="lbl">الكمية (اختياري)</label><input id="editQ" class="fld" maxlength="20" placeholder="مثلاً: 2 أو 2 كيلو أو شوية">
+        <label class="lbl">الكمية والملاحظة (اختياري)</label><input id="editQ" class="fld" maxlength="60" placeholder="مثلاً: 2 أو 2 كيلو أو شوية">
         <button class="btn" id="editSave">حفظ</button>`;
       $('editInp').value = it.n; $('editQ').value = it.q || ''; $('editInp').focus();
       const go = () => {
