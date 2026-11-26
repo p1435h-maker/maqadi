@@ -35,17 +35,22 @@
   .add{margin-top:12px;display:grid;grid-template-columns:1fr 56px;gap:8px}
   .add #inp{grid-column:1;grid-row:1}
   .add #qin{grid-column:1;grid-row:2}
-  .add #addBtn{grid-column:2;grid-row:1 / span 2}
+  .add #addBtn{grid-column:2;grid-row:2}
+  .add #sortBtn{grid-column:2;grid-row:1}
+  .sbtn{border:1.5px solid var(--line) !important;background:var(--card) !important;color:var(--ink) !important;font:inherit !important;font-size:15px !important;font-weight:800;width:56px;border-radius:16px;cursor:pointer;display:grid;place-items:center;line-height:1.1;padding:0}
+  .sbtn small{display:block;font-size:10px;font-weight:600;color:var(--soft)}
+  .find{gap:8px}
+  .find .sbtn{flex:none;height:auto}
   .find{margin-top:12px;display:none}
   .find input{width:100%;font:inherit;font-size:18px;padding:14px 16px;border-radius:16px;border:1.5px solid var(--line);background:var(--card);outline:none;color:var(--ink)}
   .find input:focus{border-color:var(--green)}
-  .tg2{font-size:11px;border-radius:6px;padding:1px 7px;margin-inline-start:6px;vertical-align:2px;background:var(--green2);color:var(--green);font-weight:700}
+  .tg2{display:inline-block;font-size:11px;border-radius:6px;padding:1px 7px;margin-inline-start:6px;vertical-align:2px;background:var(--green2);color:var(--green);font-weight:700}
   .tg2.l{background:#e9e3f5;color:#5d4a8c}
   .add input{flex:1;min-width:0;font:inherit;font-size:18px;padding:14px 16px;border-radius:16px;
     border:1.5px solid var(--line);background:var(--card);outline:none;color:var(--ink)}
   .add input:focus{border-color:var(--green)}
   .add input.qin{font-size:16px;padding:11px 16px}
-  .qty{display:inline-block;font-size:14px;font-weight:700;color:var(--green);background:var(--green2);border-radius:8px;padding:1px 9px;margin-inline-start:8px;vertical-align:2px}
+  .qty{display:inline-block;unicode-bidi:isolate;font-size:14px;font-weight:700;color:var(--green);background:var(--green2);border-radius:8px;padding:1px 9px;margin-inline-start:8px;vertical-align:2px}
   .done .qty{color:var(--done);background:#efece5}
   .fld{width:100%;font:inherit;font-size:18px;padding:13px 15px;border-radius:14px;border:1.5px solid var(--line);outline:none;margin-top:6px}
   .fld:focus{border-color:var(--green)}
@@ -73,6 +78,9 @@
   .sortbar{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:13px;color:var(--soft)}
   .sortbar button{border:1px solid var(--line);background:var(--card);font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;cursor:pointer;color:var(--soft)}
   .sortbar button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+  .csep{display:flex;align-items:center;gap:10px;margin:16px 2px 6px;font-size:13px;font-weight:700;color:var(--soft)}
+  .csep::before,.csep::after{content:"";flex:1;height:1.5px;background:var(--line)}
+  .panel{max-height:88vh;overflow-y:auto}
   .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
   .cbtn{border:1.5px solid var(--line);background:var(--card);font:inherit;font-size:14px;padding:11px 8px;border-radius:12px;cursor:pointer;text-align:start;display:flex;gap:7px;align-items:center;border-inline-start:5px solid var(--cc)}
   .cbtn.on{background:var(--green2);border-color:var(--green);border-inline-start-color:var(--cc)}
@@ -146,30 +154,29 @@
   <header>
     <div class="top">
       <img class="logo" src="icon-192.png" alt="">
-      <h1>مقاضي</h1><span class="ver">الإصدار&nbsp;9</span>
+      <h1>مقاضي</h1><span class="ver">الإصدار&nbsp;10</span>
       <div class="sp"></div>
       <button class="who" id="whoBtn"><span class="dot" id="dot"></span><span id="whoName">…</span></button>
       <button class="hmore" id="menuBtn" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
     </div>
     <div class="tabs">
-      <button class="tab on" data-tab="day">مقاضي اليوم <span class="cnt" id="cntDay">0</span></button>
-      <button class="tab" data-tab="long">مقاضي طويلة <span class="cnt" id="cntLong">0</span></button>
-      <button class="tab" data-tab="saved">المحفوظات <span class="cnt" id="cntSaved">0</span></button>
+      <button class="tab on" data-tab="day">مقاضي اليوم&zwnj; <span class="cnt" id="cntDay">0</span></button>
+      <button class="tab" data-tab="long">مقاضي طويلة&zwnj; <span class="cnt" id="cntLong">0</span></button>
+      <button class="tab" data-tab="saved">المحفوظات&zwnj; <span class="cnt" id="cntSaved">0</span></button>
     </div>
     <form class="add" id="addForm" autocomplete="off">
       <input id="inp" placeholder="أضف لمقاضي اليوم…" enterkeyhint="next" autocomplete="off">
       <input id="qin" class="qin" placeholder="الكمية والملاحظة (اختياري)" enterkeyhint="done" autocomplete="off" maxlength="60">
+      <button type="button" class="sbtn" id="sortBtn" aria-label="الترتيب"></button>
       <button type="submit" aria-label="إضافة" id="addBtn">+</button>
     </form>
-    <div class="find" id="findBox"><input id="findInp" placeholder="ابحث في المحفوظات…" autocomplete="off"></div>
+    <div class="find" id="findBox"><input id="findInp" placeholder="ابحث في المحفوظات…" autocomplete="off"><button type="button" class="sbtn" id="sortBtn2" aria-label="الترتيب"></button></div>
     <div class="selhint" id="selHint"></div>
     <div class="sugg" id="sugg"></div>
     <button class="install" id="installBtn">⬇︎ ثبّت «مقاضي» على الجوال</button>
     <div class="hint" id="iosHint">للتثبيت على آيفون: اضغط زر المشاركة في سفاري ثم «إضافة إلى الشاشة الرئيسية».</div>
   </header>
 
-  <div class="sortbar" id="sortBar">الترتيب:
-    <button data-sort="abc">أبجدي</button><button data-sort="cat">حسب القسم 🎨</button></div>
   <div class="list" id="active"></div>
   <div id="doneWrap"></div>
 </div>
@@ -198,7 +205,7 @@
 
 <script>
 /* ===== الإعدادات ===== */
-const VERSION = 9;
+const VERSION = 10;
 let CHANNEL = '';      // يُشتق من رمز العائلة — لا يُكتب في الملف
 let AES = null;        // مفتاح التشفير — يُشتق من رمز العائلة
 const SERVER  = 'https://ntfy.sh';
@@ -248,41 +255,67 @@ const CATS = [
   {id:'froz', n:'مجمدات ومثلجات',        e:'🧊', c:'#1fa5b8'},
   {id:'groc', n:'مواد غذائية',           e:'🥫', c:'#d1a017'},
   {id:'mill', n:'المطاحن والمحامص',      e:'🌰', c:'#8a5a3b'},
-  {id:'drink',n:'مشروبات ومياه',         e:'🥤', c:'#5b6fd6'},
+  {id:'dates',n:'التمور',                e:'🌴', c:'#a0662a'},
+  {id:'drink',n:'مشروبات',               e:'🥤', c:'#5b6fd6'},
+  {id:'wgas', n:'الماء والغاز',          e:'💧', c:'#2f8fd8'},
   {id:'sweet',n:'حلويات وسناكس',         e:'🍫', c:'#d4568f'},
-  {id:'clean',n:'منظفات وأدوات منزلية',  e:'🧽', c:'#7c4fc0'},
+  {id:'clean',n:'منظفات وأدوات منزلية',e:'🧽', c:'#7c4fc0'},
   {id:'care', n:'العناية الشخصية',       e:'🧴', c:'#b05ac4'},
+  {id:'perf', n:'العطور والبخور',        e:'🪔', c:'#9c4a6b'},
   {id:'baby', n:'مستلزمات الأطفال',      e:'🍼', c:'#e08a5a'},
   {id:'pharm',n:'الصيدلية',              e:'💊', c:'#16967a'},
-  {id:'other',n:'أخرى',                  e:'📦', c:'#9a968c'},
+  {id:'other',n:'أخرى (يومية)',          e:'📦', c:'#9a968c'},
+  {id:'furn', n:'أثاث ومفروشات',         e:'🛋️', c:'#6d7f3a', nd:1},
+  {id:'kitch',n:'أدوات المطبخ',          e:'🍳', c:'#c0762e', nd:1},
+  {id:'elec', n:'إلكترونيات وأجهزة',     e:'🔌', c:'#3d5a80', nd:1},
+  {id:'tools',n:'العدد والصيانة',        e:'🔧', c:'#5f6b73', nd:1},
+  {id:'stat', n:'القرطاسية',             e:'✏️', c:'#c94f6d', nd:1},
+  {id:'cloth',n:'الملابس والأحذية',      e:'👕', c:'#4a8f8c', nd:1},
+  {id:'othern',n:'أخرى (غير يومية)',     e:'🗃️', c:'#7d796f', nd:1},
 ];
 const CAT = Object.fromEntries(CATS.map((c,i) => [c.id, {...c, i}]));
 const PHRASES = {
   froz: 'بطاطس مقليه|بطاطس مجمده|خضار مجمد|خضار مشكل|ايس كريم|ايسكريم|بيتزا مجمده|سمبوسه|ناجتس|لحم مجمد|دجاج مجمد',
   groc: 'معجون طماطم|صلصه طماطم|زيت زيتون|زيت دوار|زيت ذره|ورق عنب|حليب بودره|حليب مجفف|كورن فليكس|رقائق الذره|حبوب الافطار|معكرونه|ماء ورد',
   care: 'معجون اسنان|فرشاه اسنان|فرشه اسنان|خيط اسنان|غسول فم|مزيل عرق|كريم شعر|زيت شعر|صبغه شعر|فوط صحيه|شفرات حلاقه|موس حلاقه|معجون حلاقه|كريم يدين|صابون يدين',
-  clean:'صابون صحون|صابون مواعين|صابون غسيل|سائل صحون|مسحوق غسيل|منعم ملابس|ورق تواليت|ورق حمام|ورق مطبخ|ورق قصدير|ورق زبده|اكياس زباله|اكياس قمامه|اكياس نفايات|كاسات ورق|صحون ورق|ملاعق بلاستيك|معطر جو',
+  clean:'صابون صحون|صابون مواعين|صابون غسيل|سائل صحون|مسحوق غسيل|منعم ملابس|ورق تواليت|ورق حمام|ورق مطبخ|ورق قصدير|ورق زبده|اكياس زباله|اكياس قمامه|اكياس نفايات|كاسات ورق|صحون ورق|صحون بلاستيك|ملاعق بلاستيك|معطر جو',
   baby: 'حليب اطفال|حليب رضع|مناديل مبلله|مناديل اطفال|كريم اطفال|شامبو اطفال',
   pharm:'لاصق جروح|مقياس حراره|شراب كحه|شراب سعال|قطره عين',
   mill: 'فلفل اسود|حبه سوداء|ورق غار|بهارات كبسه|قهوه عربيه|حب شمسي|فول سوداني',
   sweet:'بطاطس شيبس|شيبس|حلاوه طحينيه|بوب كورن',
-  drink:'مشروب غازي|مشروب طاقه|مياه صحه|ماء صحه',
-  veg:  'فاصوليا خضراء|فلفل حلو|فلفل رومي|بصل اخضر'
+  drink:'مشروب غازي|مشروب طاقه',
+  wgas: 'جوالين ماء|جوالين مويه|جالون ماء|جالون مويه|كرتون ماء|كرتون مويه|كرتون مياه|كراتين ماء|كراتين مويه|مياه صحه|ماء صحه|اسطوانه غاز|انبوبه غاز|دبه غاز',
+  perf: 'دهن عود|معطر ملابس|فحم بخور|عود بخور',
+  veg:  'فاصوليا خضراء|فلفل حلو|فلفل رومي|بصل اخضر',
+  elec: 'مكنسه كهربائيه|قلايه هوائيه|قلايه كهربائيه|سلك تمديد|افياش كهرباء',
+  kitch:'لوح تقطيع|اوعيه حفظ|علب حفظ|طقم صحون|طقم فناجين|طقم كاسات',
+  tools:'شريط لاصق|فرشاه دهان|شريط عازل|خرطوش ماء',
+  stat: 'ورق طباعه|حبر طابعه|شنطه مدرسيه|حقيبه مدرسيه|الوان خشبيه|الوان مائيه',
+  cloth:'ملابس داخليه|ملابس اطفال|ملابس نوم'
 };
 const WORDS = {
-  veg:  'طماطم بندوره خيار بصل ثوم بطاطس بطاطا جزر خس ملفوف زهره قرنبيط بروكلي كوسه كوسا باذنجان بتنجان فلفل فليفله بقدونس كزبره نعناع جرجير شبت ريحان فجل شمندر بنجر ليمون برتقال يوسفي مندرين موز تفاح عنب فراوله بطيخ حبحب شمام كنتالوب مانجو منجا مانجا رمان كيوي اناناس خوخ مشمش كمثري اجاص تين جوافه افوكادو بامي بازلاء ملوخيه سبانخ قرع يقطين فطر مشروم كرفس خضار خضروات فواكه فاكهه تمر رطب بلح كراث كيل جريب',
-  meat: 'لحم لحمه دجاج دجاجه فراخ فروج صدور افخاذ اجنحه كبده كبد قلوب مفروم كباب كفته برجر برقر سجق نقانق مرتديلا لانشون حبش ديك سمك سمكه هامور سلمون بلطي شعري ناجل روبيان جمبري ربيان كابوريا حبار شاورما ستيك موزات ريش غنم خروف نعيمي حري حاشي عجل بقري تكه ملحمه لحوم',
-  dairy:'حليب لبن لبنه زبادي روب جبن جبنه شيدر موزاريلا حلوم فيتا كريمه قشطه زبده بيض بيضه قيمر مراعي نادك الصافي ندي لبنيات ألبان البان',
+  veg:  'طماطم بندوره خيار بصل ثوم بطاطس بطاطا جزر خس ملفوف زهره قرنبيط بروكلي كوسه كوسا باذنجان بتنجان فلفل فليفله بقدونس كزبره نعناع جرجير شبت ريحان فجل شمندر بنجر ليمون برتقال يوسفي مندرين موز تفاح عنب فراوله بطيخ حبحب شمام كنتالوب مانجو منجا مانجا رمان كيوي اناناس خوخ مشمش كمثري اجاص تين جوافه افوكادو بامي بازلاء ملوخيه سبانخ قرع يقطين فطر مشروم كرفس خضار خضروات فواكه فاكهه كراث كيل جريب',
+  meat: 'لحم لحمه دجاج دجاجه دجاجتين فراخ فروج صدور افخاذ اجنحه كبده كبد قلوب مفروم كباب كفته برجر برقر سجق نقانق مرتديلا لانشون حبش ديك سمك سمكه هامور سلمون بلطي شعري ناجل روبيان جمبري ربيان كابوريا حبار شاورما ستيك موزات ريش غنم خروف نعيمي حري حاشي عجل بقري تكه ملحمه لحوم',
+  dairy:'حليب لبن لبنه زبادي روب جبن جبنه شيدر موزاريلا حلوم فيتا كريمه قشطه زبده بيض بيضه قيمر مراعي نادك الصافي ندي لبنيات البان',
   bake: 'خبز صامولي صمون تميس توست كرواسون كعك فطائر فطاير معجنات شابوره كيك مافن خبزه رغيف تورتيلا بقسماط',
   froz: 'مثلجات مجمد مجمده ثلج بوظه',
-  groc: 'رز ارز سكر ملح زيت دقيق طحين مكرونه اسباجيتي شعيريه نودلز اندومي عدس فول حمص فاصوليا معلبات تونه صلصه كاتشب مايونيز مايونيزه خردل خل عسل مربي شاي نسكافيه كريمر شوفان طحينه زيتون مخلل جريش برغل سميد نشا بيكنج خميره كاسترد جيلي كريم كراميل مرق ماجي حليب مكثف',
-  mill: 'بهارات بهار هيل كمون كركم قرفه زعفران قرنفل لومي سماق زعتر قهوه بن محمص مطحنه شمر يانسون مكسرات لوز فستق كاجو بندق جوز زنجبيل فلفل',
+  groc: 'رز ارز سكر ملح زيت دقيق طحين مكرونه اسباجيتي شعيريه نودلز اندومي عدس فول حمص فاصوليا معلبات تونه صلصه كاتشب مايونيز مايونيزه خردل خل عسل مربي شاي نسكافيه كريمر شوفان طحينه زيتون مخلل جريش برغل سميد نشا بيكنج خميره كاسترد جيلي كراميل مرق ماجي',
+  mill: 'بهارات بهار هيل كمون كركم قرفه زعفران قرنفل لومي سماق زعتر قهوه بن محمص مطحنه شمر يانسون مكسرات لوز فستق كاجو بندق جوز زنجبيل',
+  dates:'تمر تمور رطب بلح معمول دبس سكري خلاص عجوه صقعي مجدول برحي صفري',
   drink:'ماء مويه مياه عصير بيبسي كولا كوكاكولا سفن سبرايت ميرندا فيمتو ريدبول شراب صودا',
+  wgas: 'جوالين جالون غاز اسطوانه قوارير',
   sweet:'شوكولاته شوكولا شكولاته حلاوه حلويات حلوي بسكويت علك لبان فشار كاندي مارشملو نوتيلا كيندر جالكسي سنكرس',
-  clean:'منظف منظفات كلوركس كلور فيري تايد اريال برسيل داوني معطر ملطف مناديل كلينكس فاين اكياس كيس اسفنج فوط مكنسه ممسحه مساحه سطل مبيد بف باف شمع بطاريات بطاريه لمبه لمبات قصدير سفره فحم ولاعه كبريت معقم ديتول مطهر',
-  care: 'شامبو بلسم صابون صابونه لوشن عطر جل فازلين قطن ليفه بخور دهن مكياج مرطب',
+  clean:'منظف منظفات كلوركس كلور فيري تايد اريال برسيل داوني معطر ملطف مناديل كلينكس فاين اكياس كيس اسفنج فوط مكنسه ممسحه مساحه سطل مبيد بف باف شمع قصدير سفره فحم ولاعه كبريت معقم ديتول مطهر',
+  care: 'شامبو بلسم صابون صابونه لوشن جل فازلين قطن ليفه مكياج مرطب',
+  perf: 'عود بخور عطر عطور دهن مسك عنبر مبخره مبخر',
   baby: 'حفاضات حفايض بامبرز رضاعه سيريلاك لهايه',
-  pharm:'دواء ادويه بنادول بانادول فيفادول بروفين اسبرين فيتامين فيتامينات مسكن بلاستر شاش كمامات كمام مرهم قطره قطرات اوميغا كالسيوم زنك مضاد بندول صيدليه'
+  pharm:'دواء ادويه بنادول بانادول فيفادول بروفين اسبرين فيتامين فيتامينات مسكن بلاستر شاش كمامات كمام مرهم قطره قطرات اوميغا كالسيوم زنك مضاد بندول صيدليه',
+  furn: 'كنب كنبه طاوله طاولات كرسي كراسي سرير مرتبه دولاب خزانه رف رفوف سجاد سجاده زوليه موكيت ستاره ستائر ستاير مخده مخدات شرشف شراشف بطانيه بطانيات لحاف مفرش مفارش مرايه مكتب كومدينه تسريحه وساده وسائد جلسه كنبات',
+  kitch:'قدر قدور طاوه مقلاه صحن صحون كوب اكواب فنجان فناجين بيالات استكانات ملعقه ملاعق شوكه شوك سكين سكاكين صينيه صواني ترمس ترامس دله براد ابريق اوعيه مصفاه مغرفه مبشره قلايه طنجره كاسات كاس',
+  elec: 'شاحن سلك كيبل سماعه سماعات جوال تلفزيون شاشه راوتر مكيف مروحه غساله ثلاجه فرن مايكرويف خلاط مكواه بطاريات بطاريه لمبه لمبات توصيله فيش ريموت كاميرا لابتوب طابعه سخان غلايه كهربائي',
+  tools:'مسامير مسمار دريل براغي برغي مفك زرديه شاكوش مطرقه سيليكون دهان بويه سباكه حنفيه سلم عده منشار متر غراء',
+  stat: 'دفتر دفاتر قلم اقلام الوان مسطره مبراه ممحاه قرطاسيه كراسه ملف ملفات دباسه مقص شنطه حقيبه',
+  cloth:'ثوب ثياب شماغ غتره طاقيه عبايه عبايات جوارب حذاء احذيه جزمه نعال شبشب قميص بنطلون بيجامه فستان ملابس جاكيت بلوزه تيشيرت سروال فنيله طرحه'
 };
 const PH = []; for(const g in PHRASES) for(const p of PHRASES[g].split('|')) PH.push([norm(p), g]);
 PH.sort((a,b) => b[0].length - a[0].length);
@@ -301,6 +334,7 @@ function guessCat(name){
   for(const t of toks){ const g = tokCat(t); if(g) return g; }
   return 'other';
 }
+function catList(nd){ return CATS.filter(c => !!c.nd === !!nd); }
 function catOf(it){
   if(it.g && CAT[it.g]) return CAT[it.g];
   const k = norm(it.n), saved = S.counts[k] && S.counts[k].g;
@@ -502,6 +536,7 @@ function restore(list){
 /* ===== العرض ===== */
 const $ = id => document.getElementById(id);
 const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const ZW = '\u200C';   // فاصل يمنع اتصال الحرف الأخير بما بعده
 const DOTS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg>';
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function ago(t){
@@ -516,7 +551,7 @@ function row(it, isNew){
   const cat = catOf(it);
   return `<div class="item ${it.s?'done':''} ${isNew?'new':''}" data-id="${it.id}" style="--cc:${cat.c}">
     <div class="box">${CHECK}</div>
-    <div class="txt"><div class="name">${esc(it.n)}${it.q ? `<span class="qty">${esc(it.q)}</span>` : ''}</div><div class="meta"><span class="ctag">${cat.e} ${cat.n}</span>${meta}</div></div>
+    <div class="txt"><div class="name">${esc(it.n)}${ZW}${it.q ? `<span class="qty">${esc(it.q)}</span>` : ''}</div><div class="meta"><span class="ctag">${cat.e} ${cat.n}${ZW}</span>${ZW}${meta}</div></div>
     <button class="more" data-more="${it.id}" aria-label="خيارات">${DOTS}</button></div>`;
 }
 function render(newIds){
@@ -525,7 +560,8 @@ function render(newIds){
   $('cntDay').textContent = all.filter(it=>!it.s && !isLong(it)).length;
   $('cntLong').textContent = all.filter(it=>!it.s && isLong(it)).length;
   $('cntSaved').textContent = Object.keys(S.counts).length;
-  document.querySelectorAll('[data-sort]').forEach(b => b.classList.toggle('on', b.dataset.sort === (S.sort || 'abc')));
+  const sl = S.sort === 'cat' ? '🎨<small>القسم</small>' : 'أ-ي<small>أبجدي</small>';
+  $('sortBtn').innerHTML = sl; $('sortBtn2').innerHTML = sl;
   if(TAB === 'saved'){ renderSaved(all); return; }
   const mine = all.filter(inTab);
   const cmp = S.sort === 'cat' ? ((a,b) => (catOf(a).i - catOf(b).i) || abc(a,b)) : abc;
@@ -562,10 +598,10 @@ function renderSaved(all){
     .sort((a,b) => (S.sort === 'cat' ? catOf(a[1]).i - catOf(b[1]).i : 0) || a[0].localeCompare(b[0], 'ar'));
   $('active').innerHTML = list.length ? list.map(([k,v]) => {
     const o = open[k];
-    const tag = o ? `<span class="tg2 ${o.L?'l':''}">${o.L ? 'في الطويلة' : 'في اليوم'}</span>` : '';
+    const tag = o ? `<span class="tg2 ${o.L?'l':''}">${o.L ? 'في الطويلة' : 'في اليوم'}${ZW}</span>` : '';
     const c = catOf(v);
-    return `<div class="item" data-saved="${esc(k)}" style="--cc:${c.c}"><div class="txt"><div class="name">${esc(v.n)}${tag}</div>
-      <div class="meta"><span class="ctag">${c.e} ${c.n}</span>سُجّل ${v.c} ${v.c === 1 ? 'مرة' : (v.c === 2 ? 'مرتين' : (v.c <= 10 ? 'مرات' : 'مرة'))}</div></div>
+    return `<div class="item" data-saved="${esc(k)}" style="--cc:${c.c}"><div class="txt"><div class="name">${esc(v.n)}${ZW}${tag}</div>
+      <div class="meta"><span class="ctag">${c.e} ${c.n}${ZW}</span>${ZW}سُجّل ${v.c} ${v.c === 1 ? 'مرة' : (v.c === 2 ? 'مرتين' : (v.c <= 10 ? 'مرات' : 'مرة'))}</div></div>
       <span class="more" style="line-height:1;font-size:22px;color:var(--green)">＋</span></div>`;
   }).join('') : `<div class="empty"><b>🗂️</b>${q ? 'لا نتائج' : 'المحفوظات فارغة<br>كل غرض تسجّله يُحفظ هنا تلقائياً'}</div>`;
   $('doneWrap').innerHTML = '';
@@ -578,7 +614,7 @@ function savedMenu(k){
     <div class="acts">
       <button class="act" data-a="day"><span class="ic">📅</span>${o && !o.L ? 'حفظ الكمية' : 'أضف لمقاضي اليوم'}</button>
       <button class="act" data-a="long"><span class="ic">📋</span>${o && o.L ? 'حفظ الكمية' : 'أضف للمقاضي الطويلة'}</button>
-      <button class="act" data-a="cat"><span class="ic">🎨</span>تغيير القسم <span style="color:${catOf(v).c};font-size:14px;margin-inline-start:auto">${catOf(v).e} ${catOf(v).n}</span></button>
+      <button class="act" data-a="cat"><span class="ic">🎨</span>تغيير القسم&zwnj; <span style="color:${catOf(v).c};font-size:14px;margin-inline-start:auto">${catOf(v).e} ${catOf(v).n}</span></button>
       <button class="act red" data-a="forget"><span class="ic">🗑️</span>حذف من المحفوظات</button></div>`);
   $('actBody').onclick = e => {
     const a = e.target.closest('[data-a]'); if(!a) return;
@@ -632,7 +668,7 @@ function suggest(){
     .filter(([k,v]) => v.c >= MIN_REPEAT && k.startsWith(q) && !have.has(k))
     .sort((a,b) => b[1].c - a[1].c).slice(0, MAX_SUGG);
   box.innerHTML =
-    found.map(it => `<button type="button" class="chip ex" data-id="${it.id}">${esc(it.n)}${it.q ? `<span class="cq">${esc(it.q)}</span>` : ''}<span class="tg ${it.L?'l':''}">${it.s ? '✓ مشطوب' : (it.L ? 'طويلة' : 'اليوم')}</span></button>`).join('') +
+    found.map(it => `<button type="button" class="chip ex" data-id="${it.id}">${esc(it.n)}${ZW}${it.q ? `<span class="cq">${esc(it.q)}</span>` : ''}<span class="tg ${it.L?'l':''}">${it.s ? '✓ مشطوب' : (it.L ? 'طويلة' : 'اليوم')}</span></button>`).join('') +
     hist.map(([k,v]) => `<button type="button" class="chip" data-s="${esc(v.n)}">${esc(v.n)}</button>`).join('');
 }
 $('inp').addEventListener('input', suggest);
@@ -717,7 +753,7 @@ document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
   document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === b));
   $('inp').placeholder = TAB === 'long' ? 'أضف للمقاضي الطويلة…' : 'أضف لمقاضي اليوم…';
   const sv = TAB === 'saved';
-  $('addForm').style.display = sv ? 'none' : ''; $('findBox').style.display = sv ? 'block' : 'none';
+  $('addForm').style.display = sv ? 'none' : ''; $('findBox').style.display = sv ? 'flex' : 'none';
   $('sugg').innerHTML = ''; if(!sv) $('findInp').value = '';
   setSel(null); render(); window.scrollTo({top:0});
 });
@@ -735,7 +771,7 @@ function itemMenu(id){
   sheet(it.n, `<div class="acts">
     <button class="act" data-a="move"><span class="ic">${it.L ? '📅' : '📋'}</span>${it.L ? 'نقل لمقاضي اليوم' : 'نقل للمقاضي الطويلة'}</button>
     <button class="act" data-a="edit"><span class="ic">✏️</span>تعديل الاسم والملاحظة</button>
-    <button class="act" data-a="cat"><span class="ic">🎨</span>تغيير القسم <span style="color:${catOf(it).c};font-size:14px;margin-inline-start:auto">${catOf(it).e} ${catOf(it).n}</span></button>
+    <button class="act" data-a="cat"><span class="ic">🎨</span>تغيير القسم&zwnj; <span style="color:${catOf(it).c};font-size:14px;margin-inline-start:auto">${catOf(it).e} ${catOf(it).n}</span></button>
     <button class="act red" data-a="del"><span class="ic">🗑️</span>حذف من القائمة</button></div>`);
   $('actBody').onclick = e => {
     const a = e.target.closest('[data-a]'); if(!a) return;
@@ -765,7 +801,10 @@ function move(id){
 }
 function pickCat(name, cur){
   const k = norm(name);
-  sheet('قسم «' + name + '»', `<div class="cgrid">${CATS.map(c => `<button class="cbtn ${c.id===cur?'on':''}" data-c="${c.id}" style="--cc:${c.c}">${c.e} ${c.n}</button>`).join('')}</div>`);
+  const B = c => `<button class="cbtn ${c.id===cur?'on':''}" data-c="${c.id}" style="--cc:${c.c}">${c.e} ${c.n}${ZW}</button>`;
+  sheet('قسم «' + name + '»', `<div class="cgrid">${catList(0).map(B).join('')}</div>
+    <div class="csep">غير يومية</div>
+    <div class="cgrid">${catList(1).map(B).join('')}</div>`);
   $('actBody').onclick = e => {
     const b = e.target.closest('[data-c]'); if(!b) return;
     const g = b.dataset.c, now = Date.now();
@@ -774,7 +813,8 @@ function pickCat(name, cur){
     save(); closeSheet(); render(); toast(CAT[g].e + ' ' + CAT[g].n);
   };
 }
-document.querySelectorAll('[data-sort]').forEach(b => b.onclick = () => { S.sort = b.dataset.sort; save(); render(); });
+function toggleSort(){ S.sort = S.sort === 'cat' ? 'abc' : 'cat'; save(); render(); toast(S.sort === 'cat' ? 'الترتيب: حسب القسم 🎨' : 'الترتيب: أبجدي'); }
+$('sortBtn').onclick = toggleSort; $('sortBtn2').onclick = toggleSort;
 function rename(id, name, q){
   const ex = S.items[id]; if(!ex) return;
   const it = {...ex, n:name, q, t:Date.now()};
