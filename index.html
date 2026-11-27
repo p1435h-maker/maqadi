@@ -154,7 +154,7 @@
   <header>
     <div class="top">
       <img class="logo" src="icon-192.png" alt="">
-      <h1>مقاضي</h1><span class="ver">الإصدار&nbsp;11</span>
+      <h1>مقاضي</h1><span class="ver">الإصدار&nbsp;12</span>
       <div class="sp"></div>
       <button class="who" id="whoBtn"><span class="dot" id="dot"></span><span id="whoName">…</span></button>
       <button class="hmore" id="menuBtn" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
@@ -205,7 +205,7 @@
 
 <script>
 /* ===== الإعدادات ===== */
-const VERSION = 11;
+const VERSION = 12;
 let CHANNEL = '';      // يُشتق من رمز العائلة — لا يُكتب في الملف
 let AES = null;        // مفتاح التشفير — يُشتق من رمز العائلة
 const SERVER  = 'https://ntfy.sh';
@@ -440,7 +440,7 @@ function sendSnapshot(force){
 function findLastIdx(a,f){ for(let i=a.length-1;i>=0;i--) if(f(a[i])) return i; return -1; }
 
 document.addEventListener('visibilitychange', () => {
-  if(document.visibilityState === 'visible'){ if(!es || es.readyState === 2) connect(); else sendSnapshot(); }
+  if(document.visibilityState === 'visible'){ setTimeout(autoClear, 4000); if(!es || es.readyState === 2) connect(); else sendSnapshot(); }
 });
 window.addEventListener('online', () => connect());
 
@@ -535,6 +535,21 @@ function clearDone(){
   for(const ex of done) S.items[ex.id] = {...ex, d:1, t:now};
   save(); render(); sendSnapshot(true);
   toast('مُسح ' + done.length + ' من المشطوب', () => restore(done));
+}
+/* المسح التلقائي: مشطوبات الأيام السابقة تُنقل للمحفوظات
+   بشرط مرور ساعتين على آخر شطب من أي أحد (حتى لا يُقطع تسوق نشط) */
+const IDLE_MS = 2 * 3600 * 1000;
+function autoClear(){
+  const struck = Object.values(S.items).filter(it => !it.d && it.s);
+  if(!struck.length) return;
+  const now = Date.now();
+  const lastStrike = Math.max(...struck.map(it => it.t));
+  if(now - lastStrike < IDLE_MS) return;
+  const today = dayKey(now);
+  const old = struck.filter(it => dayKey(it.t) !== today);
+  if(!old.length) return;
+  for(const ex of old) S.items[ex.id] = {...ex, d:1, t:now};
+  save(); render(); sendSnapshot(true);
 }
 function restore(list){
   const now = Date.now();
@@ -678,8 +693,8 @@ function suggest(){
     .sort((a,b) => (a.s - b.s) || (starts(b) - starts(a)) || abc(a,b)).slice(0, 6);
   const have = new Set(live.map(it => norm(it.n)));
   const hist = Object.entries(S.counts)
-    .filter(([k,v]) => v.c >= MIN_REPEAT && k.startsWith(q) && !have.has(k))
-    .sort((a,b) => b[1].c - a[1].c).slice(0, MAX_SUGG);
+    .filter(([k,v]) => (k.startsWith(q) || k.includes(' ' + q)) && !have.has(k))
+    .sort((a,b) => (b[1].c - a[1].c) || a[0].localeCompare(b[0], 'ar')).slice(0, 6);
   box.innerHTML =
     found.map(it => `<button type="button" class="chip ex" data-id="${it.id}">${esc(it.n)}${ZW}${it.q ? `<span class="cq">${esc(it.q)}</span>` : ''}<span class="tg ${it.L?'l':''}">${it.s ? '✓ مشطوب' : (it.L ? 'طويلة' : 'اليوم')}</span></button>`).join('') +
     hist.map(([k,v]) => `<button type="button" class="chip" data-s="${esc(v.n)}">${esc(v.n)}</button>`).join('');
@@ -873,7 +888,8 @@ async function install(){
   await setupKey(S.code); connect();
   if(!S.me) askName();
 })();
-setInterval(() => render(), 60000);   // تحديث «قبل كم دقيقة»
+setInterval(() => { autoClear(); render(); }, 60000);   // تحديث «قبل كم دقيقة» + المسح التلقائي
+setTimeout(autoClear, 4000);
 </script>
 </body>
 </html>
