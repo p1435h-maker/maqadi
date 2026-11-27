@@ -154,7 +154,7 @@
   <header>
     <div class="top">
       <img class="logo" src="icon-192.png" alt="">
-      <h1>مقاضي</h1><span class="ver">الإصدار&nbsp;10</span>
+      <h1>مقاضي</h1><span class="ver">الإصدار&nbsp;11</span>
       <div class="sp"></div>
       <button class="who" id="whoBtn"><span class="dot" id="dot"></span><span id="whoName">…</span></button>
       <button class="hmore" id="menuBtn" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
@@ -205,7 +205,7 @@
 
 <script>
 /* ===== الإعدادات ===== */
-const VERSION = 10;
+const VERSION = 11;
 let CHANNEL = '';      // يُشتق من رمز العائلة — لا يُكتب في الملف
 let AES = null;        // مفتاح التشفير — يُشتق من رمز العائلة
 const SERVER  = 'https://ntfy.sh';
@@ -502,14 +502,23 @@ function addItem(name, q, forceL){
   }
   const L = forceL !== undefined ? forceL : (TAB === 'long' ? 1 : 0);
   const old = same[0];                         // مشطوب سابقاً: يعود بدل التكرار
-  const it = old ? {...old, n:name, q, s:0, b:'', a:S.me, L, c:now, t:now}
+  const it = old ? {...old, n:name, q, s:0, b:'', p:'', a:S.me, L, c:now, t:now}
                  : {id: rid(7), n:name, q, s:0, d:0, a:S.me, b:'', L, c:now, t:now, g: (S.counts[k] && S.counts[k].g) || guessCat(name)};
   bump(name);
   S.items[it.id] = it; save(); render([it.id]); sendOp(it);
 }
+function isPrev(it){ return !it.d && !it.s && !it.L && dayKey(added(it)) !== dayKey(Date.now()); }
 function toggle(id){
   const ex = S.items[id]; if(!ex) return;
-  const it = {...ex, s: ex.s?0:1, b: ex.s ? '' : S.me, t: Date.now()};
+  const now = Date.now();
+  let it;
+  if(isPrev(ex)){                                   // من «مقاضي سابقة»: يُنقل لليوم دون شطب
+    it = {...ex, c: now, p: S.me, t: now};
+    S.items[id] = it; save(); render([id]); sendOp(it); vibrate(15);
+    toast('نُقل إلى مقاضي اليوم'); return;
+  }
+  if(ex.s) it = {...ex, s:0, b:'', t: now, ...(ex.L ? {} : {c: now, p: ''})};   // الإعادة ترجعه لليوم
+  else it = {...ex, s:1, b: S.me, t: now};
   S.items[id] = it; save(); render(); sendOp(it);
   vibrate(15);
 }
@@ -543,10 +552,11 @@ function ago(t){
   const m = Math.round((Date.now()-t)/60000);
   if(m < 1) return 'الآن'; if(m < 60) return 'قبل ' + m + ' د';
   const h = Math.round(m/60); if(h < 24) return 'قبل ' + h + ' س';
-  const d = Math.round(h/24); return d === 1 ? 'أمس' : 'قبل ' + d + ' أيام';
+  const d = Math.round(h/24); return d === 1 ? 'أمس' : d === 2 ? 'قبل يومين' : 'قبل ' + d + (d <= 10 ? ' أيام' : ' يوماً');
 }
 function row(it, isNew){
   const meta = it.s ? (it.b ? 'اشتراه ' + esc(it.b) : 'تم شراؤه') + ' · ' + ago(it.t)
+                    : it.p ? 'نقله ' + esc(it.p) + ' لليوم · ' + ago(added(it))
                     : (it.a ? 'أضافه ' + esc(it.a) + ' · ' : '') + ago(added(it));
   const cat = catOf(it);
   return `<div class="item ${it.s?'done':''} ${isNew?'new':''}" data-id="${it.id}" style="--cc:${cat.c}">
@@ -579,7 +589,7 @@ function render(newIds){
     : `<div class="empty"><b>📋</b>لا مقاضي طويلة<br>أضف هنا ما يُشترى لاحقاً أو على مهل</div>`;
   $('active').innerHTML = top.length ? R(top) : emptyMsg;
   $('doneWrap').innerHTML =
-    (prev.length ? `<div class="sec">مقاضي سابقة (${prev.length})</div>` + R(prev) : '') +
+    (prev.length ? `<div class="sec">مقاضي سابقة (${prev.length})&zwnj;<span style="font-weight:500;font-size:12px;margin-inline-start:6px">(اضغط مرتين لنقله إلى اليوم)</span></div>` + R(prev) : '') +
     (done.length ? `<div class="sec">المشطوبات (${done.length})<div class="sp"></div><button class="clear" id="clearBtn">مسح المشطوب</button></div>` + R(done) : '');
   suggest();
 }
@@ -589,7 +599,10 @@ function tapItem(id){
   const now = Date.now();
   if(lastTap.id === id && now - lastTap.t < 450){ clearTimeout(tapTimer); lastTap = {id:null, t:0}; toggle(id); return; }
   lastTap = {id, t:now}; clearTimeout(tapTimer);
-  tapTimer = setTimeout(() => { if(lastTap.id === id){ lastTap = {id:null,t:0}; if((S.hint||0) < 3){ S.hint = (S.hint||0) + 1; save(); toast('اضغط مرتين للشطب أو الإعادة'); } } }, 480);
+  const prev = S.items[id] && isPrev(S.items[id]);
+  tapTimer = setTimeout(() => { if(lastTap.id === id){ lastTap = {id:null,t:0};
+    if(prev) toast('اضغط مرتين لنقله إلى اليوم');
+    else if((S.hint||0) < 3){ S.hint = (S.hint||0) + 1; save(); toast('اضغط مرتين للشطب أو الإعادة'); } } }, 480);
 }
 function renderSaved(all){
   const q = norm($('findInp').value);
@@ -686,7 +699,7 @@ function updateSel(){
   const ex = S.items[SEL]; setSel(null); if(!ex) return;
   const q = $('qin').value.replace(/\s+/g,' ').trim(), now = Date.now();
   if(ex.s){
-    const it = {...ex, q, s:0, b:'', a:S.me, L: TAB === 'long' ? 1 : 0, c:now, t:now};
+    const it = {...ex, q, s:0, b:'', p:'', a:S.me, L: TAB === 'long' ? 1 : 0, c:now, t:now};
     bump(it.n); S.items[ex.id] = it; save(); render([it.id]); sendOp(it); toast('أُعيد إلى ' + tabName(it));
   } else if(q !== (ex.q||'')){
     const it = {...ex, q, t:now}; S.items[ex.id] = it; save(); render(); sendOp(it);
@@ -795,7 +808,7 @@ function itemMenu(id){
 function move(id){
   const ex = S.items[id]; if(!ex) return;
   const now = Date.now(), toLong = !ex.L;
-  const it = {...ex, L: toLong ? 1 : 0, c: toLong ? added(ex) : now, t: now};
+  const it = {...ex, L: toLong ? 1 : 0, c: toLong ? added(ex) : now, p: '', t: now};
   S.items[id] = it; save(); render(); sendOp(it);
   toast(toLong ? 'نُقل إلى المقاضي الطويلة' : 'نُقل إلى مقاضي اليوم');
 }
