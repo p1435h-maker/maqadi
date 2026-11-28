@@ -158,7 +158,7 @@
   <header>
     <div class="top">
       <img class="logo" src="icon-192.png" alt="">
-      <div class="ttl"><h1>مقاضي</h1><span class="ver">الإصدار&nbsp;13</span></div>
+      <div class="ttl"><h1>مقاضي</h1><span class="ver">الإصدار&nbsp;14</span></div>
       <div class="sp"></div>
       <button class="hmore" id="bellBtn" aria-label="الجرس" style="font-size:17px">🔔</button>
       <button class="who" id="whoBtn"><span class="dot" id="dot"></span><span id="whoName">…</span></button>
@@ -210,7 +210,7 @@
 
 <script>
 /* ===== الإعدادات ===== */
-const VERSION = 13;
+const VERSION = 14;
 let CHANNEL = '';      // يُشتق من رمز العائلة — لا يُكتب في الملف
 let AES = null;        // مفتاح التشفير — يُشتق من رمز العائلة
 const SERVER  = 'https://ntfy.sh';
@@ -456,29 +456,40 @@ window.addEventListener('online', () => connect());
 let ac = null;
 function audio(){ if(!ac){ try{ ac = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(ac && ac.state==='suspended') ac.resume(); return ac; }
 document.addEventListener('pointerdown', audio, {once:false, passive:true});
-function tone(notes){
+function tone(notes, type, vol, step){
   const a = audio(); if(!a) return;
   let t = a.currentTime + 0.02;
-  for(const [f,d] of notes){
-    const o = a.createOscillator(), g = a.createGain();
-    o.type = 'sine'; o.frequency.value = f;
-    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.35, t+0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, t+d);
-    o.connect(g).connect(a.destination); o.start(t); o.stop(t+d+0.05);
-    t += d*0.75;
+  for(const [f,d,gap] of notes){
+    if(f > 0){
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = type || 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.35, t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+d);
+      o.connect(g).connect(a.destination); o.start(t); o.stop(t+d+0.05);
+    }
+    t += gap !== undefined ? gap : d*(step || 0.75);
   }
 }
 const SND_ADD = [[784,.16],[1047,.16],[1319,.28]];   // نغمة الإضافة: صاعدة
 const SND_BUY = [[880,.14],[659,.26]];              // نغمة الشطب: هابطة ناعمة
 /* ===== الجرس ===== */
-const SND_BELL = [[1319,.5],[988,.8],[1319,.5],[988,.9]];
+const TONES = {
+  door:   {n:'جرس الباب',   e:'🔔', p:[[1319,.5],[988,.8],[0,0,.35],[1319,.5],[988,.9]]},
+  loud:   {n:'رنّة عالية',  e:'📢', t:'square',   v:.18, p:[[880,.12,.14],[1175,.12,.14],[880,.12,.14],[1175,.12,.14],[880,.12,.14],[1175,.25]]},
+  knock:  {n:'ثلاث دقات',  e:'🚪', t:'triangle', v:.6,  p:[[220,.09,.22],[220,.09,.22],[220,.09,.7],[220,.09,.22],[220,.09,.22],[220,.12]]},
+  whistle:{n:'صفارة',      e:'🎵', p:[[1568,.18,.2],[2093,.4,.55],[1568,.18,.2],[2093,.45]]},
+  calm:   {n:'نغمة هادئة',  e:'🌙', v:.3, p:[[523,.6,.35],[659,.6,.35],[784,.6,.35],[1047,1.1]]},
+  alarm:  {n:'منبّه',      e:'⏰', t:'sawtooth', v:.12, p:[[988,.1,.13],[988,.1,.13],[988,.1,.13],[988,.1,.45],[988,.1,.13],[988,.1,.13],[988,.1,.13],[988,.1]]}
+};
+function playTone(id){ const x = TONES[id] || TONES.door; tone(x.p, x.t, x.v); }
 const PHRASES_BELL = ['وصلت السوبرماركت، تبون شي؟', 'شوفوا مقاضي، أضفت أغراض', 'خلصت التسوق', 'اتصل علي'];
 function members(){
   const set = new Set(Object.keys(S.members || {}));
   for(const it of Object.values(S.items)) for(const n of [it.a, it.b, it.p]) if(n) set.add(n);
   for(const n of Object.keys(S.phones || {})) set.add(n);
   set.delete(S.me); set.delete('');
-  return [...set].sort((a,b) => a.localeCompare(b, 'ar'));
+  const hid = S.hidden || {}, seen = S.members || {};
+  return [...set].filter(n => !hid[n] || (seen[n] || 0) > hid[n]).sort((a,b) => a.localeCompare(b, 'ar'));
 }
 function waNum(n){
   n = (n||'').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g,'');
@@ -509,7 +520,7 @@ function bellMenu(){
 document.getElementById('bellBtn').onclick = () => { bellTo = ''; bellMenu(); };
 function sendBell(to, txt){
   closeSheet();
-  publish({v:VERSION, k:'bell', dev:S.dev, from:S.me, to, txt});      // يرنّ داخل التطبيق إن كان مفتوحاً
+  publish({v:VERSION, k:'bell', dev:S.dev, from:S.me, to, txt, tone: S.tone || 'door'});      // يرنّ داخل التطبيق إن كان مفتوحاً
   toast('🔔 رنّ الجرس ' + (to ? 'عند ' + to : 'عند الجميع'));
   const msg = '🔔 ' + (txt || 'جرس من مقاضي') + '\n— ' + S.me + '\n' + appLink();
   const num = to && (S.phones||{})[to];
@@ -517,7 +528,7 @@ function sendBell(to, txt){
   setTimeout(() => { location.href = url; }, 350);               // يفتح الواتساب والرسالة جاهزة
 }
 function ringIn(p){
-  tone(SND_BELL); vibrate([300,120,300,120,300]);
+  playTone(p.tone); vibrate([300,120,300,120,300]);
   const title = '🔔 ' + (p.from || 'أحد أهل البيت') + (p.to ? ' يناديك' : ' يرنّ الجرس');
   sheet(title, `<p style="font-size:19px;color:var(--ink);margin:6px 0 4px;line-height:1.7">${esc(p.txt || 'جرس')}</p><button class="btn" id="bellOk">حسناً</button>`);
   $('bellOk').onclick = closeSheet;
@@ -526,12 +537,36 @@ function ringIn(p){
 function phonesMenu(){
   const ms = members();
   const ph = S.phones || {};
-  sheet('أرقام واتساب أهل البيت', `<p style="margin:0 0 6px;font-size:13px">تُحفظ في جوالك فقط.</p>
-    ${ms.map(n => `<label class="lbl">${esc(n)}</label><input class="fld pnum" data-n="${esc(n)}" inputmode="tel" placeholder="05xxxxxxxx" value="${esc(ph[n]||'')}">`).join('') || '<p>تظهر الأسماء هنا بعد أن يستخدم أهل البيت التطبيق.</p>'}
+  sheet('أهل البيت', `<p style="margin:0 0 6px;font-size:13px">أرقام الواتساب تُحفظ في جوالك فقط.</p>
+    ${ms.map(n => `<label class="lbl">${esc(n)}${ZW}</label><div style="display:flex;gap:8px;align-items:center"><input class="fld pnum" style="margin-top:0" data-n="${esc(n)}" inputmode="tel" placeholder="رقم الواتساب 05xxxxxxxx" value="${esc(ph[n]||'')}"><button type="button" class="more" data-hide="${esc(n)}" aria-label="حذف" style="font-size:20px;line-height:1">🗑️</button></div>`).join('') || '<p>تظهر الأسماء هنا بعد أن يستخدم أهل البيت التطبيق.</p>'}
     <button class="btn" id="phSave">حفظ</button>`);
-  $('phSave').onclick = () => {
-    S.phones = {}; document.querySelectorAll('.pnum').forEach(i => { const v = waNum(i.value); if(v.length >= 9) S.phones[i.dataset.n] = v; });
-    save(); closeSheet(); toast('حُفظت الأرقام');
+  const keep = () => { S.phones = {}; document.querySelectorAll('.pnum').forEach(i => { const v = waNum(i.value); if(v.length >= 9) S.phones[i.dataset.n] = v; }); save(); };
+  $('phSave').onclick = () => { keep(); closeSheet(); toast('حُفظ'); };
+  $('actBody').onclick = e => { const h = e.target.closest('[data-hide]'); if(h){ keep(); confirmHide(h.dataset.hide); } };
+}
+function confirmHide(name){
+  sheet('حذف عضو', `<p style="margin:0 0 6px;font-size:15px;color:var(--ink)">للحذف اكتب اسم العضو: <b>${esc(name)}</b>${ZW}</p>
+    <input id="hideInp" class="fld" autocomplete="off" placeholder="اكتب الاسم هنا"><div class="err" id="hideErr"></div>
+    <button class="btn" id="hideOk" style="background:var(--red)">حذف</button>`);
+  $('hideInp').focus();
+  const go = () => {
+    if(norm($('hideInp').value) !== norm(name)){ $('hideErr').textContent = 'الاسم غير مطابق'; return; }
+    S.hidden = S.hidden || {}; S.hidden[name] = Date.now();
+    if(S.phones) delete S.phones[name];
+    save(); toast('حُذف ' + name); phonesMenu();
+  };
+  $('hideOk').onclick = go; $('hideInp').onkeydown = e => { if(e.key === 'Enter') go(); };
+}
+function toneMenu(){
+  const cur = S.tone || 'door';
+  sheet('نغمة جرسي', `<p style="margin:0 0 6px;font-size:13px">يسمعها أهل البيت عندما ترنّ عليهم، فيعرفون أنك أنت.</p>
+    <div class="acts">${Object.entries(TONES).map(([id,x]) => `<div style="display:flex;align-items:center;gap:6px">
+      <button class="act" data-tone="${id}" style="flex:1;${id===cur?'background:var(--green2);color:var(--green);font-weight:700':''}"><span class="ic">${x.e}</span>${x.n}${ZW}${id===cur?' ✓':''}</button>
+      <button type="button" class="more" data-play="${id}" aria-label="استماع" style="font-size:20px;line-height:1">▶️</button></div>`).join('')}</div>`);
+  $('actBody').onclick = e => {
+    const pl = e.target.closest('[data-play]'); if(pl){ playTone(pl.dataset.play); return; }
+    const t = e.target.closest('[data-tone]'); if(!t) return;
+    S.tone = t.dataset.tone; save(); playTone(S.tone); toneMenu();
   };
 }
 
@@ -928,7 +963,8 @@ function mainMenu(){
   sheet('مقاضي', `<div class="acts">
     ${inst}
     <button class="act" data-a="share"><span class="ic">📤</span>أرسل الرابط لأهل البيت</button>
-    <button class="act" data-a="phones"><span class="ic">📞</span>أرقام واتساب أهل البيت</button>
+    <button class="act" data-a="phones"><span class="ic">👨‍👩‍👧</span>أهل البيت</button>
+    <button class="act" data-a="tone"><span class="ic">🎵</span>نغمة جرسي <span style="font-size:13px;color:var(--soft);margin-inline-start:auto">${(TONES[S.tone||'door']).n}</span></button>
     <button class="act" data-a="settings"><span class="ic">✏️</span>تغيير اسمي</button></div>
     <p style="margin:10px 6px 0;font-size:12px">إصدار ${VERSION}</p>`);
   $('actBody').onclick = e => {
@@ -937,6 +973,7 @@ function mainMenu(){
     if(a.dataset.a === 'share'){ closeSheet(); shareLink(); }
     if(a.dataset.a === 'settings'){ closeSheet(); askName(); }
     if(a.dataset.a === 'phones'){ phonesMenu(); }
+    if(a.dataset.a === 'tone'){ toneMenu(); }
   };
 }
 $('menuBtn').onclick = mainMenu;
